@@ -6,7 +6,7 @@
 #    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/26 15:33:59 by craimond          #+#    #+#              #
-#    Updated: 2024/06/07 19:16:10 by craimond         ###   ########.fr        #
+#    Updated: 2024/06/07 21:19:12 by craimond         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = aStar
 
 SRCS_DIR = srcs
 HDRS_DIR = srcs/headers
-SFML_DIR = SFML-2.6.1
+SFML_DIR = /usr/lib/x86_64-linux-gnu
 
 SRCS = $(addprefix $(SRCS_DIR)/, main.cpp)
 HDRS = $(addprefix $(HDRS_DIR)/, constants.hpp)
