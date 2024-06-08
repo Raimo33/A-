@@ -6,7 +6,7 @@
 #    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/26 15:33:59 by craimond          #+#    #+#              #
-#    Updated: 2024/06/07 21:19:12 by craimond         ###   ########.fr        #
+#    Updated: 2024/06/08 15:09:18 by craimond         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,8 @@ SRCS_DIR = srcs
 HDRS_DIR = srcs/headers
 SFML_DIR = /usr/lib/x86_64-linux-gnu
 
-SRCS = $(addprefix $(SRCS_DIR)/, main.cpp)
-HDRS = $(addprefix $(HDRS_DIR)/, constants.hpp)
+SRCS = $(addprefix $(SRCS_DIR)/, main.cpp Cell.cpp Grid.cpp utils.cpp exceptions.cpp)
+HDRS = $(addprefix $(HDRS_DIR)/, Cell.hpp Grid.hpp utils.hpp exceptions.hpp constants.hpp)
 OBJS = $(SRCS:.cpp=.o)
 
 LEAK_REPORT = leaks.log
