@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/08 13:08:07 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/08 13:40:59 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,12 @@ static void	visualize_pathfinding(sf::RenderWindow &window, enum e_cell grid[COL
 int main(void)
 {
 	sf::RenderWindow	window;
-	enum e_cell	grid[COLS][ROWS] = {FREE}; //0 = free, 1 = obstacle, 2 = start, 3 = end, gradients = costs
+	enum e_cell			grid[COLS][ROWS]; //0 = free, 1 = obstacle, 2 = start, 3 = end, gradients = costs
 	sf::Event			event;
 	bool				simulation_started = false;
 
 	init_window(window);
+	std::memset(grid, FREE, sizeof(grid));
 	display_grid(window, grid);
 	while (window.isOpen())
 	{
@@ -49,10 +50,10 @@ int main(void)
 					visualize_pathfinding(window, grid);
 				}
 			}
-			else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R)
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R)
 			{
 				simulation_started = false;
-				std::memset(grid, 0, sizeof(grid));
+				std::memset(grid, FREE, sizeof(grid));
 				display_grid(window, grid);
 			}
 		}
@@ -60,7 +61,6 @@ int main(void)
 			set_obstacles(window, grid);
 	}
 cleanup:
-	window.clear();
 	window.close();
 }
 
@@ -75,17 +75,23 @@ static void init_window(sf::RenderWindow &window)
 
 static void	display_grid(sf::RenderWindow &window, enum e_cell grid[COLS][ROWS])
 {
+	static enum e_cell	previous_grid[COLS][ROWS];
+	constexpr uint32_t	size_of_grid = COLS * ROWS * sizeof(enum e_cell);
 	sf::RectangleShape	rect(sf::Vector2f(TILE_SIZE, TILE_SIZE));
 
+	//window.clear();
 	for (uint16_t i = 0; i < COLS; i++)
 	{
 		for (uint16_t j = 0; j < ROWS; j++)
 		{
+			if (grid[i][j] == previous_grid[i][j])
+				continue ;
 			rect.setFillColor(cell_colors.at(grid[i][j]));
-			rect.setPosition(i * TILE_SIZE, j * TILE_SIZE); //TODO ottimizzabilissimo (constexpr)
+			rect.setPosition(i * TILE_SIZE, j * TILE_SIZE);
 			window.draw(rect);
 		}
 	}
+	std::memcpy(previous_grid, grid, size_of_grid);
 	window.display();
 }
 

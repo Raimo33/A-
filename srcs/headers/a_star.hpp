@@ -1,16 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   a_star..hpp                                        :+:      :+:    :+:   */
+/*   a_star.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 18:49:01 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/08 13:02:24 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/08 13:42:40 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+//TODO fix valgrind errors
 
 #include <cstdint>
 #include <array>
@@ -23,8 +25,8 @@ constexpr uint8_t ROWS = 20; // Number of rows
 
 enum e_cell : uint8_t
 {
-	FREE = 0,
-	OBSTACLE = 1,
+	OBSTACLE = 0, //needs to stay at 0 for the automatic static initializaton of previous_grid in display_grid
+	FREE = 1,
 	START = 2,
 	END = 3,
 };
