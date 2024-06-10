@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/08 15:39:22 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/10 03:00:25 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ int main(void)
 	bool				simulation_started = false;
 
 	init_window(window);
-	grid.reset();
 	display_grid(window, grid);
 	while (window.isOpen())
 	{
@@ -73,26 +72,30 @@ static void init_window(sf::RenderWindow &window)
 	window.setFramerateLimit(60);
 }
 
-static void	display_grid(sf::RenderWindow &window, const Grid &grid)
+static void	display_grid(sf::RenderWindow &window, const Grid &to_draw_grid)
 {
-	static Grid			previous_grid(COLS, ROWS, OBSTACLE);
+	const uint16_t		n_cols = to_draw_grid.getCols();
+	const uint16_t		n_rows = to_draw_grid.getRows();
+	static Grid			previous_grid(n_cols, n_rows, INIT_TYPE);
 	sf::RectangleShape	rect(sf::Vector2f(TILE_SIZE, TILE_SIZE));
 
 	rect.setOutlineThickness(1);
 	rect.setOutlineColor(sf::Color::Black);
-	for (uint16_t i = 0; i < COLS; i++)
+	for (uint16_t x = 0; x < n_cols; x++)
 	{
-		for (uint16_t j = 0; j < ROWS; j++)
+		for (uint16_t y = 0; y < n_rows; y++)
 		{
-			if (grid(i, j).get_type() == previous_grid(i, j).get_type())
-				continue ;
-			rect.setFillColor(cell_colors.at(grid(i, j).get_type()));
-			rect.setPosition(i * TILE_SIZE, j * TILE_SIZE);
-			printf("Drawing cell at (%d, %d)\n", i, j);
+			const Cell &cell = to_draw_grid(x, y);
+			const Cell &previous_cell = previous_grid(x, y);
+
+			if (cell == previous_cell)
+				continue;
+			rect.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+			rect.setFillColor(cell.get_color());
 			window.draw(rect);
+			previous_grid(x, y) = cell;
 		}
 	}
-	previous_grid = grid;
 	window.display();
 }
 
@@ -111,8 +114,8 @@ static void	set_obstacles(sf::RenderWindow &window, Grid &grid)
 
 static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_cell status)
 {
-	static sf::Vector2i	start_cell_pos = {-1, -1};
-	static sf::Vector2i	end_cell_pos = {-1, -1};
+	static Cell			*old_start = nullptr;
+	static Cell			*old_end = nullptr;
 	const sf::Vector2i	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (status != START && status != END)
@@ -122,17 +125,15 @@ static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_
 		return ;
 
 	const sf::Vector2i	tile = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-	sf::Vector2i		&changed_cell_pos = (status == START) ? start_cell_pos : end_cell_pos;
+	Cell				*old_cell = (status == START) ? old_start : old_end;
+	Cell				*new_cell = &grid(tile.x, tile.y);
 
-	printf("DEB1\n");
-	grid(changed_cell_pos.x, changed_cell_pos.y).set_type(FREE);
-	printf("DEB2\n");
-	grid(tile.x, tile.y).set_type(status);
-	printf("DEB3\n");
-	changed_cell_pos.x = tile.x;
-	printf("DEB4\n");
-	changed_cell_pos.y = tile.y;
-	printf("DEB5\n");
+	if (old_cell == new_cell)
+		return ;
+	new_cell->set_type(status);
+	if (old_cell)
+		old_cell->set_type(FREE);
+	(status == START) ? old_start = new_cell : old_end = new_cell;
 	display_grid(window, grid);
 }
 
@@ -144,8 +145,11 @@ static void	set_pointed_cell(Grid &grid, const enum e_cell status, sf::RenderWin
 		return ;
 
 	const sf::Vector2i	tile = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
+	Cell				&cell = grid(tile.x, tile.y);
 
-	grid(tile.x, tile.y).set_type(status);
+	if (cell.get_type() == status)
+		return ;
+	cell.set_type(status);
 	display_grid(window, grid);
 }
 
