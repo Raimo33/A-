@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 18:49:01 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/10 03:00:31 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/10 13:09:23 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 
 #include <cstdint>
 #include <array>
-#include <SFML/Graphics.hpp>
 #include <cstring>
 
 constexpr uint8_t	TILE_SIZE = 30;

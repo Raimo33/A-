@@ -6,10 +6,11 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/10 03:00:25 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/10 13:09:36 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <SFML/Graphics.hpp>
 #include "headers/Grid.hpp"
 #include "headers/Cell.hpp"
 #include "headers/constants.hpp"
