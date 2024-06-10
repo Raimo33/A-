@@ -1,4 +1,4 @@
-ARG DEPS = "build-essential cmake git libsfml-dev"
+ARG DEPS = "build-essential make git libsfml-dev:2.6.1"
 ARG DEST = "/app"
 
 FROM ubuntu:24.04
