@@ -1,14 +1,33 @@
-ARG DEPS = "build-essential make git libsfml-dev:2.6.1"
-ARG DEST = "/app"
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Dockerfile                                         :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/06/10 14:47:17 by craimond          #+#    #+#              #
+#    Updated: 2024/06/10 16:01:18 by craimond         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 FROM ubuntu:24.04
 
-ARG DEPS
-ARG DEST
+ARG DEPS="build-essential git cmake libx11-dev xorg-dev libglu1-mesa-dev libudev-dev libopenal-dev libfreetype6-dev libjpeg-dev libvorbis-dev libflac-dev"
+ARG LOCAL="app"
+ARG DEST="/app"
+ENV SFML_LIBS_DIR="/usr/local/lib"
+ENV SFML_INCS_DIR="/usr/local/include"
+ENV NAME="aStar"
 
 RUN apt-get update && apt-get install -y ${DEPS} && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY srcs ${DEST}
+RUN git clone --branch 2.6.1 https://github.com/SFML/SFML.git
+
+WORKDIR SFML
+
+RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local . && make && make install
+
+COPY ${LOCAL} ${DEST}
 
 WORKDIR ${DEST}
 

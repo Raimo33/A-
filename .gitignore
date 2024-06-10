@@ -1,4 +1,4 @@
-*.o
-SFML*/
-aStar
+build/
 .vscode/
+app/aStar
+astar

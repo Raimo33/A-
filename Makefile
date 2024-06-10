@@ -6,11 +6,11 @@
 #    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 12:51:48 by craimond          #+#    #+#              #
-#    Updated: 2024/06/10 13:32:44 by craimond         ###   ########.fr        #
+#    Updated: 2024/06/10 14:09:06 by craimond         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-DOCKERIMAGE_NAME = aStar
+DOCKERIMAGE_NAME = astar
 DOCKERFILE_PATH = .
 
 all: docker-build docker-run
