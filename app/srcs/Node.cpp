@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:39:53 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 11:54:46 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/11 14:29:21 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	Node::computeCosts(const Node &start, const Node &end)
 	_f_cost = _g_cost + _h_cost;
 }
 
-const uint16_t	Node::computeCost(const Node &other)
+uint16_t	Node::computeCost(const Node &other) const
 {
 	const Vector2D<uint16_t>	&other_pos = other.getPos();
 

@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 12:13:08 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/11 14:28:17 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,15 +87,15 @@ static void	display_grid(sf::RenderWindow &window, const Grid &to_draw_grid)
 	{
 		for (uint16_t y = 0; y < n_rows; y++)
 		{
-			const Cell &cell = to_draw_grid(x, y);
-			const Cell &previous_cell = previous_grid(x, y);
+			const Cell	&cell = to_draw_grid(x, y);
+			Cell 		&previous_cell = previous_grid(x, y);
 
 			if (cell == previous_cell)
 				continue;
 			rect.setPosition(x * TILE_SIZE, y * TILE_SIZE);
 			rect.setFillColor(cell.get_color());
 			window.draw(rect);
-			previous_grid(x, y) = cell;
+			previous_cell = cell;
 		}
 	}
 	window.display();
@@ -118,17 +118,16 @@ static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_
 {
 	static Cell					*old_start = nullptr;
 	static Cell					*old_end = nullptr;
-	const Vector2D<uint32_t>	mouse_pos = sf::Mouse::getPosition(window);
+	const Vector2D<uint16_t>	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (status != START && status != END)
 		throw InternalErrorException("update_start_end: status must be either START or END");
-
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
 
-	const Vector2D<uint16_t>	tile = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
+	const Vector2D<uint16_t>	tile_pos = {static_cast<uint16_t>(mouse_pos.x / TILE_SIZE), static_cast<uint16_t>(mouse_pos.y / TILE_SIZE)};
 	Cell						*old_cell = (status == START) ? old_start : old_end;
-	Cell						*new_cell = &grid(tile.x, tile.y);
+	Cell						*new_cell = &grid(tile_pos.x, tile_pos.y);
 
 	if (old_cell == new_cell)
 		return ;
@@ -141,13 +140,13 @@ static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_
 
 static void	set_pointed_cell(Grid &grid, const enum e_cell status, sf::RenderWindow &window)
 {
-	const Vector2D<uint32_t>	mouse_pos = sf::Mouse::getPosition(window);
+	const Vector2D<uint16_t>	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
 
-	const Vector2D<uint16_t>	tile = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-	Cell						&cell = grid(tile.x, tile.y);
+	const Vector2D<uint16_t>	tile_pos = {static_cast<uint16_t>(mouse_pos.x / TILE_SIZE), static_cast<uint16_t>(mouse_pos.y / TILE_SIZE)};
+	Cell						&cell = grid(tile_pos.x, tile_pos.y);
 
 	if (cell.get_type() == status)
 		return ;

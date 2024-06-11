@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:28:30 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 11:54:23 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/11 14:28:43 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Node : public Cell
 		void						computeCosts(const Node &start, const Node &end);
 
 	private:
-		const uint16_t				computeCost(const Node &other);
+		uint16_t					computeCost(const Node &other) const;
 
 		uint16_t					_g_cost;
 		uint16_t					_h_cost;

@@ -6,11 +6,12 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:15:32 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 12:12:24 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/11 14:02:00 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers/utils.hpp"
+#include "headers/Vector2D.hpp"
 
 #include <cstdint>
 
