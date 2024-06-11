@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:15:32 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/08 14:20:28 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/11 12:12:24 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include <cstdint>
 
-bool	is_mouse_in_window(const sf::RenderWindow &window, const sf::Vector2i &mouse_pos)
+bool	is_mouse_in_window(const sf::RenderWindow &window, const Vector2D<uint16_t> &mouse_pos)
 {
 	const uint16_t win_width = window.getSize().x;
 	const uint16_t win_height = window.getSize().y;

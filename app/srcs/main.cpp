@@ -6,11 +6,12 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/10 13:09:36 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/11 12:13:08 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <SFML/Graphics.hpp>
+#include "headers/Vector2D.hpp"
 #include "headers/Grid.hpp"
 #include "headers/Cell.hpp"
 #include "headers/constants.hpp"
@@ -115,9 +116,9 @@ static void	set_obstacles(sf::RenderWindow &window, Grid &grid)
 
 static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_cell status)
 {
-	static Cell			*old_start = nullptr;
-	static Cell			*old_end = nullptr;
-	const sf::Vector2i	mouse_pos = sf::Mouse::getPosition(window);
+	static Cell					*old_start = nullptr;
+	static Cell					*old_end = nullptr;
+	const Vector2D<uint32_t>	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (status != START && status != END)
 		throw InternalErrorException("update_start_end: status must be either START or END");
@@ -125,9 +126,9 @@ static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
 
-	const sf::Vector2i	tile = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-	Cell				*old_cell = (status == START) ? old_start : old_end;
-	Cell				*new_cell = &grid(tile.x, tile.y);
+	const Vector2D<uint16_t>	tile = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
+	Cell						*old_cell = (status == START) ? old_start : old_end;
+	Cell						*new_cell = &grid(tile.x, tile.y);
 
 	if (old_cell == new_cell)
 		return ;
@@ -140,13 +141,13 @@ static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_
 
 static void	set_pointed_cell(Grid &grid, const enum e_cell status, sf::RenderWindow &window)
 {
-	const sf::Vector2i	mouse_pos = sf::Mouse::getPosition(window);
+	const Vector2D<uint32_t>	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
 
-	const sf::Vector2i	tile = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-	Cell				&cell = grid(tile.x, tile.y);
+	const Vector2D<uint16_t>	tile = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
+	Cell						&cell = grid(tile.x, tile.y);
 
 	if (cell.get_type() == status)
 		return ;

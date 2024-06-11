@@ -1,17 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.hpp                                          :+:      :+:    :+:   */
+/*   Vector2D.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/08 14:18:53 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 12:12:24 by craimond         ###   ########.fr       */
+/*   Created: 2024/06/11 11:46:35 by craimond          #+#    #+#             */
+/*   Updated: 2024/06/11 12:11:49 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <cstdint>
 
-bool	is_mouse_in_window(const sf::RenderWindow &window, const Vector2D<uint16_t> &mouse_pos);
+template <typename T, typename T2 = T>
+class Vector2D
+{
+	public:
+		Vector2D(const T x = 0, const T y = 0);
+		Vector2D(const Vector2D &src);
+		Vector2D(const sf::Vector2<T2> &src);
+		~Vector2D(void);
+
+		Vector2D		&operator=(const Vector2D &rhs);
+		bool			operator==(const Vector2D &rhs) const;
+		bool			operator!=(const Vector2D &rhs) const;
+
+		T				x;
+		T				y;
+};
+
+#include "Vector2D.tpp"
