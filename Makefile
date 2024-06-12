@@ -6,7 +6,7 @@
 #    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 12:51:48 by craimond          #+#    #+#              #
-#    Updated: 2024/06/11 11:20:27 by craimond         ###   ########.fr        #
+#    Updated: 2024/06/12 23:17:27 by craimond         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,11 +22,11 @@ docker-build:
 docker-run:
 	@xhost +local:root
 	@docker run -it \
+		--privileged \
+		--device /dev/dri \
 		-e DISPLAY=$(DISPLAY) \
 		-e XDG_RUNTIME_DIR=/tmp \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
-		--device /dev/input/js0:/dev/input/js0 \
-		--device /dev/input/js1:/dev/input/js1 \
 		--name $(CONTAINER_NAME) \
 		$(DOCKERIMAGE_NAME)
 

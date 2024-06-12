@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 15:00:10 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 19:22:14 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 23:36:38 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ using std::array;
 
 Grid::Grid(const int32_t n_cols, const int32_t n_rows, const enum e_cell_type status)
 {
-	_grid.reserve(n_cols);
+	_grid.resize(n_cols);
 	for (int32_t x = 0; x < n_cols; x++)
 	{
-		_grid[x].reserve(n_rows);
+		_grid[x].resize(n_rows);
 		for (int32_t y = 0; y < n_rows; y++)
 			_grid[x][y] = new Node(status, x, y);
 	}
@@ -71,7 +71,6 @@ void	Grid::setNeighbours(Cell &cell) const
 	const int32_t			n_rows = getRows();
 	auto					it = neighbours.begin();
 
-	//TODO check degli ostacoli
 	for (int32_t x = pos.x - 1; x <= pos.x + 1; x++)
 	{
 		if (x < 0 || x >= n_cols)

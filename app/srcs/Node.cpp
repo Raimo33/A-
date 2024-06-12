@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:39:53 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 19:24:51 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 23:45:03 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,21 @@
 using std::array;
 
 Node::Node(const enum e_cell_type type, const int32_t x, const int32_t y) :
-	Cell(type, x, y),
+	Tile(type, x, y),
 	_g_cost(0),
 	_h_cost(0),
 	_f_cost(0),
 	_neighbours() {}
 
-Node::Node(const Cell &src) :
-	Cell(src),
+Node::Node(const Tile &src) :
+	Tile(src),
 	_g_cost(0),
 	_h_cost(0),
 	_f_cost(0),
 	_neighbours() {}
 
 Node::Node(const Node &src) :
-	Cell(src),
+	Tile(src),
 	_g_cost(src._g_cost),
 	_h_cost(src._h_cost),
 	_f_cost(src._f_cost),

@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 19:34:05 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 23:57:34 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 //TODO una volta trovata la migliore path, visualizzarla con la transparency che va e viene (3 celle per volta tipo dallo start fino all'end e poi torna indietro, molto dinamica, in un loop)
 
 #include <SFML/Graphics.hpp>
+#include <chrono>
+
 #include "headers/Vector2D.hpp"
 #include "headers/Grid.hpp"
 #include "headers/Cell.hpp"
@@ -37,10 +39,13 @@ static const sf::Color compute_color(const int32_t f_cost);
 
 int main(void)
 {
-	sf::RenderWindow	window;
-	Grid				grid(N_COLS, N_ROWS);
-	sf::Event			event;
-	bool				simulation_started = false;
+	sf::RenderWindow				window;
+	Grid							grid(N_COLS, N_ROWS);
+	sf::Event						event;
+	bool							simulation_started = false;
+	auto							last_time = std::chrono::high_resolution_clock::now();
+	auto							current_time = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double>	elapsed_time;
 
 	init_window(window);
 	put_grid_on_window(window, grid);
@@ -70,7 +75,16 @@ int main(void)
 			}
 		}
 		if (!simulation_started)
-			set_obstacles(window, grid);
+		{
+			current_time = std::chrono::high_resolution_clock::now();
+			elapsed_time = current_time - last_time;
+
+			if (elapsed_time.count() > TICK_RATE)
+			{
+				set_obstacles(window, grid);
+				last_time = current_time;
+			}
+		}
 	}
 cleanup:
 	window.close();
@@ -79,7 +93,7 @@ cleanup:
 static void init_window(sf::RenderWindow &window)
 {
 	window.create(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "A* Pathfinding");
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(FPS);
 }
 
 static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile)
@@ -90,9 +104,9 @@ static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile)
 
 static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid)
 {
-	for (uint8_t i = 0; i < N_COLS; i++)
+	for (int32_t i = 0; i < N_COLS; i++)
 	{
-		for (uint8_t j = 0; j < N_ROWS; j++)
+		for (int32_t j = 0; j < N_ROWS; j++)
 		{
 			const Tile	&tile = dynamic_cast<const Tile &>(grid(i, j));
 			window.draw(tile.getSprite());

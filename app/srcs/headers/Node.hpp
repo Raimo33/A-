@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:28:30 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 19:20:41 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 23:44:10 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 #include <cstdint>
 
-#include "Cell.hpp"
+#include "Tile.hpp"
 #include "Vector2D.hpp"
 
-class Node : public Cell
+class Node : public Tile
 {
 	public:
 		Node(const enum e_cell_type type, const int32_t x, const int32_t y);
-		Node(const Cell &src);
+		Node(const Tile &src);
 		Node(const Node &src);
 		~Node(void);
 
