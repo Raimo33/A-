@@ -6,13 +6,13 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 15:04:34 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 16:20:00 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 18:37:42 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers/Tile.hpp"
 
-Tile::Tile(const enum e_cell type, const int32_t x, const int32_t y) :
+Tile::Tile(const enum e_cell_type type, const int32_t x, const int32_t y) :
 	Cell(type, x, y),
 	_color(tile_colors.at(type)),
 	_sprite(initSprite()) {}
@@ -31,10 +31,17 @@ Tile::~Tile(void) {}
 
 bool	Tile::operator==(const Tile &rhs) const { return Cell::operator==(rhs); }
 
-const sf::Color				&Tile::getColor(void) const { return _color; }
+const sf::Color	&Tile::getColor(void) const { return _color; }
+
+void	Tile::setColor(const sf::Color &color)
+{
+	_color = color;
+	_sprite.setFillColor(_color);
+}
+
 const sf::RectangleShape	&Tile::getSprite(void) const { return _sprite; }
 
-void	Tile::setType(const enum e_cell type)
+void	Tile::setType(const enum e_cell_type type)
 {
 	_type = type;
 	_color = tile_colors.at(type);
