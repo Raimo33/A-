@@ -6,39 +6,35 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:39:53 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 14:29:21 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 15:42:14 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers/Node.hpp"
 
-Node::Node(const enum e_cell type, const uint16_t x, const uint16_t y) :
-	Cell(type),
+Node::Node(const enum e_cell type, const int32_t x, const int32_t y) :
+	Cell(type, x, y),
 	_g_cost(0),
 	_h_cost(0),
-	_f_cost(0),
-	_pos({x, y}) {}
+	_f_cost(0) {}
 
-Node::Node(const Cell &src, const uint16_t x, const uint16_t y) :
+Node::Node(const Cell &src) :
 	Cell(src),
 	_g_cost(0),
 	_h_cost(0),
-	_f_cost(0),
-	_pos({x, y}) {}
+	_f_cost(0) {}
 
 Node::Node(const Node &src) :
 	Cell(src),
 	_g_cost(src._g_cost),
 	_h_cost(src._h_cost),
-	_f_cost(src._f_cost),
-	_pos(src._pos) {}
+	_f_cost(src._f_cost) {}
 
 Node::~Node(void) {}
 
-uint16_t					Node::getCostG(void) const { return _g_cost; }
-uint16_t					Node::getCostH(void) const { return _h_cost; }
-uint16_t					Node::getCostF(void) const { return _f_cost; }
-const Vector2D<uint16_t>	&Node::getPos(void) const { return _pos; }
+int32_t					Node::getCostG(void) const { return _g_cost; }
+int32_t					Node::getCostH(void) const { return _h_cost; }
+int32_t					Node::getCostF(void) const { return _f_cost; }
 
 void	Node::computeCosts(const Node &start, const Node &end)
 {
@@ -47,11 +43,11 @@ void	Node::computeCosts(const Node &start, const Node &end)
 	_f_cost = _g_cost + _h_cost;
 }
 
-uint16_t	Node::computeCost(const Node &other) const
+int32_t	Node::computeCost(const Node &other) const
 {
-	const Vector2D<uint16_t>	&other_pos = other.getPos();
+	const Vector2D<int32_t>	&other_pos = other.getPos();
 
-	uint16_t x_distance = std::abs(_pos.x - other_pos.x);
-	uint16_t y_distance = std::abs(_pos.y - other_pos.y);
+	int32_t x_distance = ::abs(_pos.x - other_pos.x);
+	int32_t y_distance = ::abs(_pos.y - other_pos.y);
 	return x_distance + y_distance;
 }

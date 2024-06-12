@@ -6,9 +6,11 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 14:28:17 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 16:20:55 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+//TODO type correctness (uint16_t, uint8_t, Vector2D ovunque)
 
 #include <SFML/Graphics.hpp>
 #include "headers/Vector2D.hpp"
@@ -18,10 +20,9 @@
 #include "headers/exceptions.hpp"
 #include "headers/utils.hpp"
 
-using std::array, std::pair;
-
 static void	init_window(sf::RenderWindow &window);
-static void	display_grid(sf::RenderWindow &window, const Grid &grid);
+static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile);
+static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid);
 static void	set_obstacles(sf::RenderWindow &window, Grid &grid);
 static void	set_pointed_cell(Grid &grid, const enum e_cell status, sf::RenderWindow &window);
 static void	update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_cell status);
@@ -30,12 +31,12 @@ static void	visualize_pathfinding(sf::RenderWindow &window, Grid &grid);
 int main(void)
 {
 	sf::RenderWindow	window;
-	Grid				grid(COLS, ROWS);
+	Grid				grid(N_COLS, N_ROWS);
 	sf::Event			event;
 	bool				simulation_started = false;
 
 	init_window(window);
-	display_grid(window, grid);
+	put_grid_on_window(window, grid);
 	while (window.isOpen())
 	{
 		while (window.pollEvent(event))
@@ -58,7 +59,7 @@ int main(void)
 			{
 				simulation_started = false;
 				grid.reset();
-				display_grid(window, grid);
+				put_grid_on_window(window, grid);
 			}
 		}
 		if (!simulation_started)
@@ -74,30 +75,17 @@ static void init_window(sf::RenderWindow &window)
 	window.setFramerateLimit(60);
 }
 
-static void	display_grid(sf::RenderWindow &window, const Grid &to_draw_grid)
+static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile)
 {
-	const uint16_t		n_cols = to_draw_grid.getCols();
-	const uint16_t		n_rows = to_draw_grid.getRows();
-	static Grid			previous_grid(n_cols, n_rows, INIT_TYPE);
-	sf::RectangleShape	rect(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+	window.draw(tile.getSprite());
+	window.display();
+}
 
-	rect.setOutlineThickness(1);
-	rect.setOutlineColor(sf::Color::Black);
-	for (uint16_t x = 0; x < n_cols; x++)
-	{
-		for (uint16_t y = 0; y < n_rows; y++)
-		{
-			const Cell	&cell = to_draw_grid(x, y);
-			Cell 		&previous_cell = previous_grid(x, y);
-
-			if (cell == previous_cell)
-				continue;
-			rect.setPosition(x * TILE_SIZE, y * TILE_SIZE);
-			rect.setFillColor(cell.get_color());
-			window.draw(rect);
-			previous_cell = cell;
-		}
-	}
+static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid)
+{
+	for (uint8_t i = 0; i < N_COLS; i++)
+		for (uint8_t j = 0; j < N_ROWS; j++)
+			window.draw(grid(i, j).getSprite());
 	window.display();
 }
 
@@ -116,42 +104,45 @@ static void	set_obstacles(sf::RenderWindow &window, Grid &grid)
 
 static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_cell status)
 {
-	static Cell					*old_start = nullptr;
-	static Cell					*old_end = nullptr;
-	const Vector2D<uint16_t>	mouse_pos = sf::Mouse::getPosition(window);
+	static Tile	*old_start = nullptr;
+	static Tile	*old_end = nullptr;
 
 	if (status != START && status != END)
 		throw InternalErrorException("update_start_end: status must be either START or END");
+
+	const Vector2D<int32_t>		mouse_pos = sf::Mouse::getPosition(window);
+
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
 
-	const Vector2D<uint16_t>	tile_pos = {static_cast<uint16_t>(mouse_pos.x / TILE_SIZE), static_cast<uint16_t>(mouse_pos.y / TILE_SIZE)};
-	Cell						*old_cell = (status == START) ? old_start : old_end;
-	Cell						*new_cell = &grid(tile_pos.x, tile_pos.y);
+	const Vector2D<int32_t>	tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
 
-	if (old_cell == new_cell)
+	Tile	*old_tile = (status == START) ? old_start : old_end;
+	Tile	*new_tile = &grid(tile_pos.x, tile_pos.y);
+
+	new_tile->setType(status);
+	put_tile_on_window(window, *new_tile);
+	(status == START) ? old_start = new_tile : old_end = new_tile;
+	if (!old_tile)
 		return ;
-	new_cell->set_type(status);
-	if (old_cell)
-		old_cell->set_type(FREE);
-	(status == START) ? old_start = new_cell : old_end = new_cell;
-	display_grid(window, grid);
+	old_tile->setType(FREE);
+	put_tile_on_window(window, *old_tile);
 }
 
 static void	set_pointed_cell(Grid &grid, const enum e_cell status, sf::RenderWindow &window)
 {
-	const Vector2D<uint16_t>	mouse_pos = sf::Mouse::getPosition(window);
+	const Vector2D<int32_t>			mouse_pos = sf::Mouse::getPosition(window);
 
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
 
-	const Vector2D<uint16_t>	tile_pos = {static_cast<uint16_t>(mouse_pos.x / TILE_SIZE), static_cast<uint16_t>(mouse_pos.y / TILE_SIZE)};
-	Cell						&cell = grid(tile_pos.x, tile_pos.y);
+	const Vector2D<int32_t>			tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
+	Tile							&tile = grid(tile_pos.x, tile_pos.y);
 
-	if (cell.get_type() == status)
+	if (tile.getType() == status)
 		return ;
-	cell.set_type(status);
-	display_grid(window, grid);
+	tile.setType(status);
+	put_tile_on_window(window, tile);
 }
 
 static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)

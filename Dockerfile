@@ -6,7 +6,7 @@
 #    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 14:47:17 by craimond          #+#    #+#              #
-#    Updated: 2024/06/11 14:22:59 by craimond         ###   ########.fr        #
+#    Updated: 2024/06/12 13:24:15 by craimond         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,4 +39,4 @@ WORKDIR ${DEST}
 
 RUN make && make clean
 
-CMD ["./aStar"]
+ENTRYPOINT ["./aStar"]

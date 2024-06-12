@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 18:49:01 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 11:54:25 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 14:36:58 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,21 @@
 
 //TODO fix valgrind errors
 
+#include <SFML/Graphics.hpp>
 #include <cstdint>
 #include <array>
-#include <cstring>
 
-constexpr uint8_t	TILE_SIZE = 30;
-constexpr uint8_t	COLS = 30;
-constexpr uint8_t	ROWS = 20;
-constexpr uint16_t	WIN_WIDTH = COLS * TILE_SIZE;
-constexpr uint16_t	WIN_HEIGHT = ROWS * TILE_SIZE;
+constexpr uint8_t										GRADIENT_RESOLUTION = 255;
+constexpr uint8_t										TILE_SIZE = 30;
+constexpr uint8_t										N_COLS = 30;
+constexpr uint8_t										N_ROWS = 20;
+constexpr int32_t										WIN_WIDTH = N_COLS * TILE_SIZE;
+constexpr int32_t										WIN_HEIGHT = N_ROWS * TILE_SIZE;
+extern const std::array<sf::Color, GRADIENT_RESOLUTION>	GRADIENT;
+extern const sf::Color									WHITE;
+extern const sf::Color									BLACK;
+extern const sf::Color									GREEN;
+extern const sf::Color									RED;
+extern const sf::Color									GRAY;
+
+const std::array<sf::Color, GRADIENT_RESOLUTION>	precompute_gradient(void);

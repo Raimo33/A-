@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:58:58 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 14:10:48 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 12:50:43 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ Vector2D<T>::Vector2D(const Vector2D &src) : x(src.x), y(src.y) {}
 
 template <typename T>
 template <typename sfT>
-Vector2D<T>::Vector2D(const sf::Vector2<sfT> &src) : x(src.x), y(src.y) {}
+Vector2D<T>::Vector2D(const sf::Vector2<sfT> &src) : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)) {}
 
 template <typename T>
 Vector2D<T>::~Vector2D(void) {}

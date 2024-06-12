@@ -6,13 +6,14 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:46:35 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 14:03:35 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 13:12:43 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <cstdint>
+#include <SFML/System/Vector2.hpp>
 
 template <typename T>
 class Vector2D

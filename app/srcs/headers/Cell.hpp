@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:35:55 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/11 10:38:49 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 16:18:09 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <cstdint>
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
+#include "constants.hpp"
+#include "Vector2D.hpp"
 
 enum e_cell : uint8_t
 {
@@ -22,32 +24,21 @@ enum e_cell : uint8_t
 	FREE = 1,
 	START = 2,
 	END = 3,
-	INIT_TYPE = 4 // used in display_grid to display first time
 };
 
 class Cell
 {
 	public:
-		Cell(const enum e_cell type = FREE);
+		Cell(const enum e_cell type, const int32_t x, const int32_t y);
 		Cell(const Cell &src);
-		~Cell(void);
+		virtual ~Cell(void) = 0;
 
-		Cell				&operator=(const Cell &rhs);
-		bool				operator==(const Cell &rhs) const;
+		bool					operator==(const Cell &rhs) const;
 
-		enum e_cell			get_type(void) const;
-		void				set_type(const enum e_cell type);
-		const sf::Color		&get_color(void) const;
+		const Vector2D<int32_t>	&getPos(void) const;
+		enum e_cell				getType(void) const;
 
-	private:
-		enum e_cell			_type;
-		sf::Color			_color;
-};
-
-static const std::unordered_map<e_cell, const sf::Color> cell_colors = {
-	{FREE, sf::Color::White},
-	{OBSTACLE, sf::Color::Black},
-	{START, sf::Color::Green},
-	{END, sf::Color::Red},
-	{INIT_TYPE, sf::Color::White}
+	protected:
+		enum e_cell				_type;
+		const Vector2D<int32_t>	_pos;
 };

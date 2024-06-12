@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:55:47 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/10 02:20:20 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 16:11:30 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,24 @@
 #include <memory>
 #include <cstdint>
 
-#include "Cell.hpp"
+#include "Tile.hpp"
 
 class Grid
 {
 	public:
-		Grid(const uint16_t n_cols, const uint16_t n_rows, const enum e_cell status = FREE);
+		Grid(const int32_t n_cols, const int32_t n_rows, const enum e_cell status = FREE);
 		~Grid(void);
 
-		Cell		&operator()(const uint16_t x, const uint16_t y);
-		const Cell	&operator()(const uint16_t x, const uint16_t y) const;
+		Tile		&operator()(const int32_t x, const int32_t y);
+		const Tile	&operator()(const int32_t x, const int32_t y) const;
 
-		uint16_t	getCols(void) const;
-		uint16_t	getRows(void) const;
+		int32_t		getCols(void) const;
+		int32_t		getRows(void) const;
 		bool		isEmpty(void) const;
 
 		void		reset(void);
+		void		insertTile(const Tile &tile);
 
 	private:
-		std::vector<std::vector<Cell>>	_grid;
+		std::vector<std::vector<Tile *>>	_grid;
 };
