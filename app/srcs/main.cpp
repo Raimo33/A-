@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 23:57:34 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 00:29:47 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <chrono>
+#include <iostream>
 
 #include "headers/Vector2D.hpp"
 #include "headers/Grid.hpp"
@@ -26,7 +27,7 @@
 #include "headers/Node.hpp"
 #include "headers/Tile.hpp"
 
-using std::array, std::vector;
+using std::array, std::vector, std::cout, std::cerr, std::endl;
 
 static void	init_window(sf::RenderWindow &window);
 static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile);
@@ -64,7 +65,20 @@ int main(void)
 				else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
 				{
 					simulation_started = true;
-					visualize_pathfinding(window, grid);
+					try //TODO refactor
+					{
+						visualize_pathfinding(window, grid);	
+					}
+					catch (const Grid::StartNotFoundException &e)
+					{
+						cerr << e.what() << endl;
+						simulation_started = false;
+					}
+					catch (const Grid::EndNotFoundException &e)
+					{
+						cerr << e.what() << endl;
+						simulation_started = false;
+					}
 				}
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R)
@@ -104,6 +118,7 @@ static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile)
 
 static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid)
 {
+	window.clear();
 	for (int32_t i = 0; i < N_COLS; i++)
 	{
 		for (int32_t j = 0; j < N_ROWS; j++)

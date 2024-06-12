@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 15:00:10 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 23:36:38 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 00:31:06 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ float	Grid::computeDistance(const Cell &a, const Cell &b)
 }
 //TODO fare heuristic
 
-void	Grid::reset(void)
+void	Grid::reset(void) //TODO fix
 {
 	for (auto &col : _grid)
 		for (auto &cell : col)
