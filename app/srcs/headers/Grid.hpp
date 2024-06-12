@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:55:47 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 18:07:45 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:18:38 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,13 @@ class Grid
 
 		int32_t								getCols(void) const;
 		int32_t								getRows(void) const;
-		const Cell							&getStart(void) const;
-		const Cell							&getEnd(void) const;
-		float								getDistance(const Cell &a, const Cell &b) const;
+		Cell								&getStart(void) const;
+		Cell								&getEnd(void) const;
 
 		void								reset(void);
 		void								insertCell(const Cell &tile);
+
+		static float						computeDistance(const Cell &a, const Cell &b);
 
 		class								StartNotFoundException;
 		class								EndNotFoundException;

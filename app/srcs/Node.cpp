@@ -6,22 +6,23 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:39:53 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 18:54:44 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:24:51 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers/Node.hpp"
+#include "headers/Grid.hpp"
 
-using array;
+using std::array;
 
-Node::Node(const enum e_cell_type type, const int32_t x, const int32_t y, const array<Node *, 8> &neighbours) :
+Node::Node(const enum e_cell_type type, const int32_t x, const int32_t y) :
 	Cell(type, x, y),
 	_g_cost(0),
 	_h_cost(0),
 	_f_cost(0),
-	_neighbours(neighbours) {}
+	_neighbours() {}
 
-Node::Node(const Cell &src, const array<Node *, 8> &neighbours) :
+Node::Node(const Cell &src) :
 	Cell(src),
 	_g_cost(0),
 	_h_cost(0),
@@ -37,24 +38,19 @@ Node::Node(const Node &src) :
 
 Node::~Node(void) {}
 
-int32_t						Node::getCostG(void) const { return _g_cost; }
-void						Node::setCostG(const int32_t g_cost) { _g_cost = g_cost; }
-int32_t						Node::getCostH(void) const { return _h_cost; }
-void						Node::setCostH(const int32_t h_cost) { _h_cost = h_cost; }
-int32_t						Node::getCostF(void) const { return _f_cost; }
-void						Node::setCostF(const int32_t f_cost) { _f_cost = f_cost; }
+bool	Node::operator==(const Node &other) const { return Cell::operator==(other) && _g_cost == other._g_cost && _h_cost == other._h_cost && _f_cost == other._f_cost; }
+
+float						Node::getCostG(void) const { return _g_cost; }
+void						Node::setCostG(const float g_cost) { _g_cost = g_cost; }
+float						Node::getCostH(void) const { return _h_cost; }
+void						Node::setCostH(const float h_cost) { _h_cost = h_cost; }
+float						Node::getCostF(void) const { return _f_cost; }
+void						Node::setCostF(const float f_cost) { _f_cost = f_cost; }
 const array<Node *, 8>		&Node::getNeighbours(void) const { return _neighbours; }
 void						Node::setNeighbours(const array<Node *, 8> &neighbours) { _neighbours = neighbours; }
 
 void	Node::computeCostG(const Node &start) { _g_cost = computeCost(start); }
 void	Node::computeCostH(const Node &end) { _h_cost = computeCost(end); }
-void	Node::computeCostF(const Node &start, const Node &end) { _f_cost = _g_cost + _h_cost; }
+void	Node::computeCostF(const Node &start, const Node &end) { _f_cost = computeCost(start) + computeCost(end); }
 
-int32_t	Node::computeCost(const Node &other) const
-{
-	const Vector2D<int32_t>	&other_pos = other.getPos();
-
-	int32_t x_distance = ::abs(_pos.x - other_pos.x);
-	int32_t y_distance = ::abs(_pos.y - other_pos.y);
-	return x_distance + y_distance;
-}
+float	Node::computeCost(const Node &other) const { return Grid::computeDistance(*this, other); }

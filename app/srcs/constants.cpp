@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 13:39:16 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 18:49:08 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:26:05 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,3 +26,5 @@ const std::array<sf::Color, 255>	precompute_gradients(void)
 		colors[i] = sf::Color(i, i, i);
 	return (colors);
 }
+
+const std::array<sf::Color, 255>	GRADIENTS = precompute_gradients();

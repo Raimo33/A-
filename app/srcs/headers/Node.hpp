@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:28:30 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 18:55:04 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:20:41 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@ class Node : public Cell
 
 		bool						operator==(const Node &rhs) const;
 
-		int32_t						getCostG(void) const;
-		void						setCostG(const int32_t g_cost);
-		int32_t						getCostH(void) const;
-		void						setCostH(const int32_t h_cost);
-		int32_t						getCostF(void) const;
-		void						setCostF(const int32_t f_cost);
+		float						getCostG(void) const;
+		void						setCostG(const float g_cost);
+		float						getCostH(void) const;
+		void						setCostH(const float h_cost);
+		float						getCostF(void) const;
+		void						setCostF(const float f_cost);
 		const std::array<Node *, 8>	&getNeighbours(void) const;
 		void						setNeighbours(const std::array<Node *, 8> &neighbours);
 
@@ -41,10 +41,10 @@ class Node : public Cell
 		void						computeCostF(const Node &start, const Node &end);
 
 	private:
-		int32_t						computeCost(const Node &other) const;
+		float						computeCost(const Node &other) const;
 
-		int32_t						_g_cost;
-		int32_t						_h_cost;
-		int32_t						_f_cost;
+		float						_g_cost;
+		float						_h_cost;
+		float						_f_cost;
 		std::array<Node *, 8>		_neighbours;
 };

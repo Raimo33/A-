@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 15:00:10 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 18:57:28 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:22:14 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ const Cell	&Grid::operator()(const int32_t x, const int32_t y) const { return *_
 int32_t		Grid::getCols(void) const { return _grid.size(); }
 int32_t		Grid::getRows(void) const { return _grid.empty() ? 0 : _grid[0].size(); }
 
-const Cell	&Grid::getStart(void) const
+Cell	&Grid::getStart(void) const
 {
 	for (auto &col : _grid)
 		for (auto &cell : col)
@@ -53,7 +53,7 @@ const Cell	&Grid::getStart(void) const
 	throw StartNotFoundException();
 }
 
-const Cell	&Grid::getEnd(void) const
+Cell	&Grid::getEnd(void) const
 {
 	for (auto &col : _grid)
 		for (auto &cell : col)
@@ -88,16 +88,16 @@ void	Grid::setNeighbours(Cell &cell) const
 	node.setNeighbours(neighbours);
 }
 
-//optimized to work only between adjacent cells
-float	Grid::getDistance(const Cell &cell, const Cell &neighbour) const
+float	Grid::computeDistance(const Cell &a, const Cell &b)
 {
-	const Vector2D<int32_t>	&pos_a = cell.getPos();
-	const Vector2D<int32_t>	&pos_b = neighbour.getPos();
+	const Vector2D<int32_t>	&pos_a = a.getPos();
+	const Vector2D<int32_t>	&pos_b = b.getPos();
 	const int32_t			dx = ::abs(pos_a.x - pos_b.x);
 	const int32_t			dy = ::abs(pos_a.y - pos_b.y);
 
-	return dx + dy + (1.414 - 2) * std::min(dx, dy);
+	return sqrt(dx * dx + dy * dy);
 }
+//TODO fare heuristic
 
 void	Grid::reset(void)
 {
@@ -113,3 +113,6 @@ void	Grid::insertCell(const Cell &cell)
 	delete _grid[pos.x][pos.y];
 	_grid[pos.x][pos.y] = new Node(cell);
 }
+
+const char *Grid::StartNotFoundException::what(void) const throw() { return "Start not found"; }
+const char *Grid::EndNotFoundException::what(void) const throw() { return "End not found"; }

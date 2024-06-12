@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 19:01:16 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:21:36 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "headers/Node.hpp"
 #include "headers/Tile.hpp"
 
-using std::array;
+using std::array, std::vector;
 
 static void	init_window(sf::RenderWindow &window);
 static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile);
@@ -93,8 +93,8 @@ static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid)
 	{
 		for (uint8_t j = 0; j < N_ROWS; j++)
 		{
-			
-			window.draw(grid(i, j).getSprite());
+			const Tile	&tile = dynamic_cast<const Tile &>(grid(i, j));
+			window.draw(tile.getSprite());
 		}
 	}
 	window.display();
@@ -129,7 +129,7 @@ static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_
 	const Vector2D<int32_t>	tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
 
 	Tile	*old_tile = (status == START) ? old_start : old_end;
-	Tile	*new_tile = &grid(tile_pos.x, tile_pos.y);
+	Tile	*new_tile = dynamic_cast<Tile *>(&grid(tile_pos.x, tile_pos.y));
 
 	new_tile->setType(status);
 	put_tile_on_window(window, *new_tile);
@@ -148,7 +148,7 @@ static void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::Rend
 		return ;
 
 	const Vector2D<int32_t>	tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-	Tile					&tile = grid(tile_pos.x, tile_pos.y);
+	Tile					&tile = dynamic_cast<Tile &>(grid(tile_pos.x, tile_pos.y));
 
 	if (tile.getType() == status)
 		return ;
@@ -158,31 +158,32 @@ static void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::Rend
 
 static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
 {
-	Node 			start(grid.getStart());
-	Node 			end(grid.getEnd());
-	vector<Node>	open_set, closed_set;
+	Node 			&start = dynamic_cast<Node &>(grid.getStart());
+	Node 			&end = dynamic_cast<Node &>(grid.getEnd());
+	vector<Node *>	open_set, closed_set;
 
-	open_set.push_back(start);
+	open_set.push_back(&start);
 	while (!open_set.empty())
 	{
 		// Find the node with the lowest f_cost
 		int32_t best_idx = 0;
-		for (int32_t i = 0; i < open_set.size(); i++)
+		int32_t open_set_size = open_set.size();
+		for (int32_t i = 0; i < open_set_size; i++)
 		{
-			open_set[i].computeCostG(start);
-			open_set[i].computeCostH(end);
-			open_set[i].computeCostF(start, end);
-			if (open_set[i].getCostF() < open_set[best_idx].getCostF())
+			open_set[i]->computeCostG(start);
+			open_set[i]->computeCostH(end);
+			open_set[i]->computeCostF(start, end);
+			if (open_set[i]->getCostF() < open_set[best_idx]->getCostF())
 				best_idx = i;
 		}
 
-		Node &current = open_set[best_idx];
+		Node &current = *open_set[best_idx];
 		// If the current node is the end node, we have found the path
 		if (current == end)
 			break;
 
 		open_set.erase(open_set.begin() + best_idx);
-		closed_set.push_back(current);
+		closed_set.push_back(&current);
 
 		const array<Node *, 8>	&neighbors = current.getNeighbours();
 		for (Node *neighbor : neighbors)
@@ -193,7 +194,7 @@ static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
 			if (std::find(closed_set.begin(), closed_set.end(), neighbor) != closed_set.end())
 				continue;
 
-			int32_t tentative_g_cost = current.getCostG() + grid.getDistance(current, *neighbor);
+			int32_t tentative_g_cost = current.getCostG() + Grid::computeDistance(current, *neighbor);
 			
 			// If the neighbor is not in the open set, add it
 			if (std::find(open_set.begin(), open_set.end(), neighbor) == open_set.end())
@@ -211,6 +212,7 @@ static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
 			Tile			&tile = dynamic_cast<Tile &>(*neighbor); //altrimenti dynamic_cast<Tile &>(grid(neighbor->getPos().x, neighbor->getPos().y));
 			const sf::Color	&color = compute_color(neighbor->getCostF()); //TODO maximum f_cost = N_COLS + N_ROWS
 			tile.setColor(color);
+			put_tile_on_window(window, tile);
 		}
 	}
 	// Optionally, visualize or use the path here
