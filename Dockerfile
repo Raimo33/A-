@@ -6,13 +6,13 @@
 #    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 14:47:17 by craimond          #+#    #+#              #
-#    Updated: 2024/06/12 13:24:15 by craimond         ###   ########.fr        #
+#    Updated: 2024/06/12 19:31:46 by craimond         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 FROM ubuntu:24.04
 
-ARG DEPS="build-essential wget git cmake libx11-dev xorg-dev libglu1-mesa-dev libudev-dev libopenal-dev libfreetype6-dev libjpeg-dev libvorbis-dev libflac-dev"
+ARG DEPS="build-essential wget git cmake libx11-dev xorg-dev libglu1-mesa-dev libudev-dev libopenal-dev libfreetype6-dev libjpeg-dev libvorbis-dev libflac-dev libgl1-mesa-dri mesa-utils"
 ARG LOCAL="app"
 ARG DEST="/app"
 
