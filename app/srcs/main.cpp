@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 00:29:47 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 12:41:42 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 //TODO una volta trovata la migliore path, visualizzarla con la transparency che va e viene (3 celle per volta tipo dallo start fino all'end e poi torna indietro, molto dinamica, in un loop)
 
 #include <SFML/Graphics.hpp>
-#include <chrono>
 #include <iostream>
+#include <cfloat>
 
 #include "headers/Vector2D.hpp"
 #include "headers/Grid.hpp"
@@ -36,6 +36,7 @@ static void	set_obstacles(sf::RenderWindow &window, Grid &grid);
 static void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindow &window);
 static void	update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_cell_type status);
 static void	visualize_pathfinding(sf::RenderWindow &window, Grid &grid);
+static void	set_neighbours(Node &node, Grid &grid);
 static const sf::Color compute_color(const int32_t f_cost);
 
 int main(void)
@@ -44,9 +45,6 @@ int main(void)
 	Grid							grid(N_COLS, N_ROWS);
 	sf::Event						event;
 	bool							simulation_started = false;
-	auto							last_time = std::chrono::high_resolution_clock::now();
-	auto							current_time = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double>	elapsed_time;
 
 	init_window(window);
 	put_grid_on_window(window, grid);
@@ -89,16 +87,8 @@ int main(void)
 			}
 		}
 		if (!simulation_started)
-		{
-			current_time = std::chrono::high_resolution_clock::now();
-			elapsed_time = current_time - last_time;
-
-			if (elapsed_time.count() > TICK_RATE)
-			{
-				set_obstacles(window, grid);
-				last_time = current_time;
-			}
-		}
+			set_obstacles(window, grid);
+		window.display();
 	}
 cleanup:
 	window.close();
@@ -113,7 +103,6 @@ static void init_window(sf::RenderWindow &window)
 static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile)
 {
 	window.draw(tile.getSprite());
-	window.display();
 }
 
 static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid)
@@ -127,7 +116,6 @@ static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid)
 			window.draw(tile.getSprite());
 		}
 	}
-	window.display();
 }
 
 static void	set_obstacles(sf::RenderWindow &window, Grid &grid)
@@ -192,6 +180,22 @@ static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
 	Node 			&end = dynamic_cast<Node &>(grid.getEnd());
 	vector<Node *>	open_set, closed_set;
 
+	for (int32_t x = 0; x < N_COLS; x++)
+	{
+		for (int32_t y = 0; y < N_ROWS; y++)
+		{
+			Node &node = dynamic_cast<Node &>(grid(x, y));
+			if (node.getType() == OBSTACLE)
+				continue;
+			set_neighbours(node, grid);
+			node.setCostH(Grid::computeDistance(node, end));
+			node.setCostG(FLT_MAX);
+			node.setCostF(FLT_MAX);
+		}
+	}
+	start.setCostG(0);
+	start.setCostF(start.getCostH());
+
 	open_set.push_back(&start);
 	while (!open_set.empty())
 	{
@@ -200,9 +204,6 @@ static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
 		int32_t open_set_size = open_set.size();
 		for (int32_t i = 0; i < open_set_size; i++)
 		{
-			open_set[i]->computeCostG(start);
-			open_set[i]->computeCostH(end);
-			open_set[i]->computeCostF(start, end);
 			if (open_set[i]->getCostF() < open_set[best_idx]->getCostF())
 				best_idx = i;
 		}
@@ -224,7 +225,7 @@ static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
 			if (std::find(closed_set.begin(), closed_set.end(), neighbor) != closed_set.end())
 				continue;
 
-			int32_t tentative_g_cost = current.getCostG() + Grid::computeDistance(current, *neighbor);
+			float tentative_g_cost = current.getCostG() + Grid::computeDistance(current, *neighbor);
 			
 			// If the neighbor is not in the open set, add it
 			if (std::find(open_set.begin(), open_set.end(), neighbor) == open_set.end())
@@ -236,11 +237,10 @@ static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
 			// This path is the best until now. Record it
 			// neighbor->setParent(current);
 			neighbor->setCostG(tentative_g_cost);
-			neighbor->computeCostH(end);
-			neighbor->computeCostF(start, end);
+			neighbor->setCostF(neighbor->getCostG() + neighbor->getCostH());
 
-			Tile			&tile = dynamic_cast<Tile &>(*neighbor); //altrimenti dynamic_cast<Tile &>(grid(neighbor->getPos().x, neighbor->getPos().y));
-			const sf::Color	&color = compute_color(neighbor->getCostF()); //TODO maximum f_cost = N_COLS + N_ROWS
+			Tile			&tile = dynamic_cast<Tile &>(*neighbor);
+			const sf::Color	&color = compute_color(neighbor->getCostF());
 			tile.setColor(color);
 			put_tile_on_window(window, tile);
 		}
@@ -248,10 +248,36 @@ static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
 	// Optionally, visualize or use the path here
 }
 
+static void set_neighbours(Node &node, Grid &grid)
+{
+	array<Node *, 8>		neighbours;
+	const Vector2D<int32_t>	&pos = node.getPos();
+	const int32_t			n_cols = grid.getCols();
+	const int32_t			n_rows = grid.getRows();
+	auto					it = neighbours.begin();
+
+	for (int32_t x = pos.x - 1; x <= pos.x + 1; x++)
+	{
+		if (x < 0 || x >= n_cols)
+			continue;
+		for (int32_t y = pos.y - 1; y <= pos.y + 1; y++)
+		{
+			if (y < 0 || y >= n_rows || (x == pos.x && y == pos.y))
+				continue;
+			Cell &cell = grid(x, y);
+			if (cell.getType() == OBSTACLE)
+				continue;
+			*it++ = dynamic_cast<Node *>(&cell);
+		}
+	}
+	node.setNeighbours(neighbours);
+}
+
 static const sf::Color compute_color(const int32_t f_cost)
 {
 	static const int32_t	max_f_cost = N_COLS + N_ROWS;
 
+	printf("f_cost: %d\n", f_cost);
 	if (f_cost < 0 || f_cost > max_f_cost)
 		throw InternalErrorException("compute_color: f_cost out of bounds");
 	

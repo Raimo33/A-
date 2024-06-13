@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:55:47 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 19:18:38 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 11:52:15 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ class Grid
 		class								EndNotFoundException;
 
 	private:
-		void								setNeighbours(Cell &tile) const;
 
 		std::vector<std::vector<Cell *>>	_grid;
 };

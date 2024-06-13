@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:35:55 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 18:11:14 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 10:59:02 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 
 enum e_cell_type : uint8_t
 {
-	OBSTACLE = 0,
-	FREE = 1,
+	FREE = 0,
+	OBSTACLE = 1,
 	START = 2,
 	END = 3,
 };

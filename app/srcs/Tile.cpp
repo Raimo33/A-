@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 15:04:34 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 00:22:02 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 11:31:43 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,21 @@ void	Tile::setType(const enum e_cell_type type)
 
 sf::RectangleShape	Tile::initSprite(void) const
 {
-	sf::RectangleShape	sprite(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+	sf::RectangleShape		sprite(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+	static const sf::Color	gray(128, 128, 128);
 
 	sprite.setOutlineThickness(1);
-	sprite.setOutlineColor(GRAY);
+	sprite.setOutlineColor(gray);
 	sprite.setPosition(_pos.x * TILE_SIZE, _pos.y * TILE_SIZE);
 	sprite.setFillColor(_color);
 
 	return sprite;
 }
 
+const std::unordered_map<enum e_cell_type, sf::Color>	tile_colors =
+{
+	{ FREE, sf::Color::White },
+	{ OBSTACLE, sf::Color::Black },
+	{ START, sf::Color::Green },
+	{ END, sf::Color::Red }
+};

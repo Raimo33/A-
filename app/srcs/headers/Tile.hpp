@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:38:22 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 23:43:28 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 11:18:14 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,4 @@ class Tile : public Cell
 		sf::RectangleShape			_sprite;
 };
 
-static const std::unordered_map<e_cell_type, sf::Color> tile_colors = {
-	{FREE, WHITE},
-	{OBSTACLE, BLACK},
-	{START, GREEN},
-	{END, RED}
-};
+extern const std::unordered_map<enum e_cell_type, sf::Color>	tile_colors;

@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:28:30 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 23:44:10 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 12:31:22 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,20 +28,18 @@ class Node : public Tile
 		bool						operator==(const Node &rhs) const;
 
 		float						getCostG(void) const;
-		void						setCostG(const float g_cost);
+		void						setCostG(const float cost);
 		float						getCostH(void) const;
-		void						setCostH(const float h_cost);
+		void						setCostH(const float cost);
 		float						getCostF(void) const;
-		void						setCostF(const float f_cost);
+		void						setCostF(const float cost);
 		const std::array<Node *, 8>	&getNeighbours(void) const;
 		void						setNeighbours(const std::array<Node *, 8> &neighbours);
 
 		void						computeCostG(const Node &start);
 		void						computeCostH(const Node &end);
-		void						computeCostF(const Node &start, const Node &end);
 
 	private:
-		float						computeCost(const Node &other) const;
 
 		float						_g_cost;
 		float						_h_cost;

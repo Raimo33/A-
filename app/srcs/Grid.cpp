@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 15:00:10 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 00:31:06 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 11:52:44 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,6 @@ Grid::Grid(const int32_t n_cols, const int32_t n_rows, const enum e_cell_type st
 		for (int32_t y = 0; y < n_rows; y++)
 			_grid[x][y] = new Node(status, x, y);
 	}
-	for (int32_t x = 0; x < n_cols; x++)
-		for (int32_t y = 0; y < n_rows; y++)
-			setNeighbours(*_grid[x][y]);
 }
 
 Grid::~Grid(void)
@@ -60,31 +57,6 @@ Cell	&Grid::getEnd(void) const
 			if (cell->getType() == END)
 				return *cell;
 	throw EndNotFoundException();
-}
-
-void	Grid::setNeighbours(Cell &cell) const
-{
-	array<Node *, 8>		neighbours;
-	Node					&node = dynamic_cast<Node &>(cell);
-	const Vector2D<int32_t>	&pos = cell.getPos();
-	const int32_t			n_cols = getCols();
-	const int32_t			n_rows = getRows();
-	auto					it = neighbours.begin();
-
-	for (int32_t x = pos.x - 1; x <= pos.x + 1; x++)
-	{
-		if (x < 0 || x >= n_cols)
-			continue;
-		for (int32_t y = pos.y - 1; y <= pos.y + 1; y++)
-		{
-			if (y < 0 || y >= n_rows || (x == pos.x && y == pos.y))
-				continue;
-			if (_grid[x][y]->getType() == OBSTACLE)
-				continue;
-			*it++ = dynamic_cast<Node *>(_grid[x][y]);
-		}
-	}
-	node.setNeighbours(neighbours);
 }
 
 float	Grid::computeDistance(const Cell &a, const Cell &b)

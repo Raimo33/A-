@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:39:53 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/12 23:45:03 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 12:31:13 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,16 +41,10 @@ Node::~Node(void) {}
 bool	Node::operator==(const Node &other) const { return Cell::operator==(other) && _g_cost == other._g_cost && _h_cost == other._h_cost && _f_cost == other._f_cost; }
 
 float						Node::getCostG(void) const { return _g_cost; }
-void						Node::setCostG(const float g_cost) { _g_cost = g_cost; }
+void						Node::setCostG(const float cost) { _g_cost = cost; }
 float						Node::getCostH(void) const { return _h_cost; }
-void						Node::setCostH(const float h_cost) { _h_cost = h_cost; }
+void						Node::setCostH(const float cost) { _h_cost = cost; }
 float						Node::getCostF(void) const { return _f_cost; }
-void						Node::setCostF(const float f_cost) { _f_cost = f_cost; }
+void						Node::setCostF(const float cost) { _f_cost = cost; }
 const array<Node *, 8>		&Node::getNeighbours(void) const { return _neighbours; }
 void						Node::setNeighbours(const array<Node *, 8> &neighbours) { _neighbours = neighbours; }
-
-void	Node::computeCostG(const Node &start) { _g_cost = computeCost(start); }
-void	Node::computeCostH(const Node &end) { _h_cost = computeCost(end); }
-void	Node::computeCostF(const Node &start, const Node &end) { _f_cost = computeCost(start) + computeCost(end); }
-
-float	Node::computeCost(const Node &other) const { return Grid::computeDistance(*this, other); }
