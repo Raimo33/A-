@@ -1,3 +1,6 @@
+![Screenshot from 2024-06-13 20-24-30](https://github.com/Raimo33/A_star/assets/104778891/f390c443-c1d3-4622-8615-f9f304e8622d)
+![Screenshot from 2024-06-13 20-23-43](https://github.com/Raimo33/A_star/assets/104778891/b0385ff0-dc20-46cd-a9bf-77551204d56e)
+![Screenshot from 2024-06-13 20-23-10](https://github.com/Raimo33/A_star/assets/104778891/eb1ae8fa-58cd-46d0-8f2e-e5330b96e475)
 
 # A* Algorithm Visualizer
 
