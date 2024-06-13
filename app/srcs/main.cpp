@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 14:33:40 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 18:59:20 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@
 
 using std::array, std::vector, std::unordered_map;
 
-static void set_obstacles(Grid &grid, sf::RenderWindow &window);
-static void set_start(Grid &grid, sf::RenderWindow &window);
-static void set_end(Grid &grid, sf::RenderWindow &window);
-static void reset_grid(Grid &grid, sf::RenderWindow &window);
+void set_obstacles(Grid &grid, sf::RenderWindow &window);
+void set_start(Grid &grid, sf::RenderWindow &window);
+void set_end(Grid &grid, sf::RenderWindow &window);
+void reset_grid(Grid &grid, sf::RenderWindow &window);
+void set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindow &window);
 
 using Handler = void (*)(Grid&, sf::RenderWindow&);
 
@@ -34,13 +35,12 @@ int main(void)
 	sf::RenderWindow								window;
 	Grid											grid(N_COLS, N_ROWS);
 	sf::Event										event;
-	bool											visualized = false;
 	const unordered_map<sf::Keyboard::Key, Handler>	key_handlers =
 	{
-		{sf::Keyboard::S, set_start},
-		{sf::Keyboard::E, set_end},
-		{sf::Keyboard::R, reset_grid},
-		{sf::Keyboard::Space, visualize_pathfinding}
+		{sf::Keyboard::Key::S, set_start},
+		{sf::Keyboard::Key::E, set_end},
+		{sf::Keyboard::Key::R, reset_grid},
+		{sf::Keyboard::Key::Space, visualize_pathfinding}
 	};
 
 	init_window(window);
@@ -49,14 +49,10 @@ int main(void)
 	{
 		while (window.pollEvent(event))
 		{
-			if (event.type == sf::Event::Closed || visualized)
+			if (event.type == sf::Event::Closed)
 				goto cleanup;
-			if (event.type == sf::Event::KeyPressed)
-			{
-				auto handler = key_handlers.find(event.key.code);
-				if (handler != key_handlers.end())
-					handler->first(grid, window);
-			}
+			if (event.type == sf::Event::KeyPressed && key_handlers.find(event.key.code) != key_handlers.end())
+				key_handlers.at(event.key.code)(grid, window);
 		}
 		set_obstacles(grid, window);
 		window.display();
@@ -65,7 +61,7 @@ cleanup:
 	window.close();
 }
 
-static void	set_start(Grid &grid, sf::RenderWindow &window)
+void	set_start(Grid &grid, sf::RenderWindow &window)
 {
 	static Tile				*old_start = nullptr;
 	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
@@ -89,7 +85,7 @@ static void	set_start(Grid &grid, sf::RenderWindow &window)
 	old_start = new_start;
 }
 
-static void	set_end(Grid &grid, sf::RenderWindow &window)
+void	set_end(Grid &grid, sf::RenderWindow &window)
 {
 	static Tile				*old_end = nullptr;
 	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
@@ -113,13 +109,13 @@ static void	set_end(Grid &grid, sf::RenderWindow &window)
 	old_end = new_end;
 }
 
-static void	reset_grid(Grid &grid, sf::RenderWindow &window)
+void	reset_grid(Grid &grid, sf::RenderWindow &window)
 {
 	grid.reset();
 	put_grid_on_window(window, grid);
 }
 
-static void	set_obstacles(Grid &grid, sf::RenderWindow &window)
+void	set_obstacles(Grid &grid, sf::RenderWindow &window)
 {
 	const bool	left_click = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 	const bool	right_click = sf::Mouse::isButtonPressed(sf::Mouse::Right);
@@ -132,7 +128,7 @@ static void	set_obstacles(Grid &grid, sf::RenderWindow &window)
 	set_pointed_cell(grid, status, window);
 }
 
-static void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindow &window)
+void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindow &window)
 {
 	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
 

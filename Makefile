@@ -6,7 +6,7 @@
 #    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 12:51:48 by craimond          #+#    #+#              #
-#    Updated: 2024/06/12 23:17:27 by craimond         ###   ########.fr        #
+#    Updated: 2024/06/13 18:33:09 by craimond         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,9 @@ docker-clean:
 	@docker stop $(CONTAINER_NAME)
 	@docker rm $(CONTAINER_NAME)
 	@docker rmi -f $(DOCKERIMAGE_NAME)
+	@docker image prune -f
 
 re: docker-clean all
 
 .PHONY: docker-build docker-run docker-clean
+.IGNORE: docker-clean

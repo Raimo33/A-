@@ -6,7 +6,7 @@
 #    By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/12 23:17:57 by craimond          #+#    #+#              #
-#    Updated: 2024/06/12 23:22:28 by craimond         ###   ########.fr        #
+#    Updated: 2024/06/13 18:34:27 by craimond         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,6 @@ COPY ${LOCAL} ${DEST}
 
 WORKDIR ${DEST}
 
-RUN make
+RUN make && make clean
 
 CMD ["./aStar"]

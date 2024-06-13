@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:39:53 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 14:24:41 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 19:22:17 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,3 +48,5 @@ float						Node::getCostF(void) const { return _f_cost; }
 void						Node::setCostF(const float cost) { _f_cost = cost; }
 const array<Node *, 8>		&Node::getneighbors(void) const { return _neighbors; }
 void						Node::setneighbors(const array<Node *, 8> &neighbors) { _neighbors = neighbors; }
+Node						*Node::getParent(void) const { return _parent; }
+void						Node::setParent(Node *parent) { _parent = parent; }
