@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:28:30 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 12:31:22 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 14:24:41 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ class Node : public Tile
 		void						setCostH(const float cost);
 		float						getCostF(void) const;
 		void						setCostF(const float cost);
-		const std::array<Node *, 8>	&getNeighbours(void) const;
-		void						setNeighbours(const std::array<Node *, 8> &neighbours);
+		const std::array<Node *, 8>	&getneighbors(void) const;
+		void						setneighbors(const std::array<Node *, 8> &neighbors);
 
 		void						computeCostG(const Node &start);
 		void						computeCostH(const Node &end);
@@ -44,5 +44,5 @@ class Node : public Tile
 		float						_g_cost;
 		float						_h_cost;
 		float						_f_cost;
-		std::array<Node *, 8>		_neighbours;
+		std::array<Node *, 8>		_neighbors;
 };

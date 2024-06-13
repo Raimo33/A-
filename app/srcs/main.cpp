@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 12:41:42 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 14:33:40 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,36 +15,33 @@
 //TODO una volta trovata la migliore path, visualizzarla con la transparency che va e viene (3 celle per volta tipo dallo start fino all'end e poi torna indietro, molto dinamica, in un loop)
 
 #include <SFML/Graphics.hpp>
-#include <iostream>
-#include <cfloat>
 
-#include "headers/Vector2D.hpp"
 #include "headers/Grid.hpp"
-#include "headers/Cell.hpp"
-#include "headers/constants.hpp"
-#include "headers/exceptions.hpp"
-#include "headers/utils.hpp"
-#include "headers/Node.hpp"
-#include "headers/Tile.hpp"
+#include "headers/pathfinding.hpp"
+#include "headers/window_utils.hpp"
 
-using std::array, std::vector, std::cout, std::cerr, std::endl;
+using std::array, std::vector, std::unordered_map;
 
-static void	init_window(sf::RenderWindow &window);
-static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile);
-static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid);
-static void	set_obstacles(sf::RenderWindow &window, Grid &grid);
-static void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindow &window);
-static void	update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_cell_type status);
-static void	visualize_pathfinding(sf::RenderWindow &window, Grid &grid);
-static void	set_neighbours(Node &node, Grid &grid);
-static const sf::Color compute_color(const int32_t f_cost);
+static void set_obstacles(Grid &grid, sf::RenderWindow &window);
+static void set_start(Grid &grid, sf::RenderWindow &window);
+static void set_end(Grid &grid, sf::RenderWindow &window);
+static void reset_grid(Grid &grid, sf::RenderWindow &window);
+
+using Handler = void (*)(Grid&, sf::RenderWindow&);
 
 int main(void)
 {
-	sf::RenderWindow				window;
-	Grid							grid(N_COLS, N_ROWS);
-	sf::Event						event;
-	bool							simulation_started = false;
+	sf::RenderWindow								window;
+	Grid											grid(N_COLS, N_ROWS);
+	sf::Event										event;
+	bool											visualized = false;
+	const unordered_map<sf::Keyboard::Key, Handler>	key_handlers =
+	{
+		{sf::Keyboard::S, set_start},
+		{sf::Keyboard::E, set_end},
+		{sf::Keyboard::R, reset_grid},
+		{sf::Keyboard::Space, visualize_pathfinding}
+	};
 
 	init_window(window);
 	put_grid_on_window(window, grid);
@@ -52,73 +49,77 @@ int main(void)
 	{
 		while (window.pollEvent(event))
 		{
-			if (event.type == sf::Event::Closed)
+			if (event.type == sf::Event::Closed || visualized)
 				goto cleanup;
-			if (!simulation_started)
+			if (event.type == sf::Event::KeyPressed)
 			{
-				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
-					update_start_end(grid, window, START);
-				else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E)
-					update_start_end(grid, window, END);
-				else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
-				{
-					simulation_started = true;
-					try //TODO refactor
-					{
-						visualize_pathfinding(window, grid);	
-					}
-					catch (const Grid::StartNotFoundException &e)
-					{
-						cerr << e.what() << endl;
-						simulation_started = false;
-					}
-					catch (const Grid::EndNotFoundException &e)
-					{
-						cerr << e.what() << endl;
-						simulation_started = false;
-					}
-				}
-			}
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R)
-			{
-				simulation_started = false;
-				grid.reset();
-				put_grid_on_window(window, grid);
+				auto handler = key_handlers.find(event.key.code);
+				if (handler != key_handlers.end())
+					handler->first(grid, window);
 			}
 		}
-		if (!simulation_started)
-			set_obstacles(window, grid);
+		set_obstacles(grid, window);
 		window.display();
 	}
 cleanup:
 	window.close();
 }
 
-static void init_window(sf::RenderWindow &window)
+static void	set_start(Grid &grid, sf::RenderWindow &window)
 {
-	window.create(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "A* Pathfinding");
-	window.setFramerateLimit(FPS);
-}
+	static Tile				*old_start = nullptr;
+	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
 
-static void	put_tile_on_window(sf::RenderWindow &window, const Tile &tile)
-{
-	window.draw(tile.getSprite());
-}
+	if (!is_mouse_in_window(window, mouse_pos))
+		return ;
+	
+	const Vector2D<int32_t>	pointed_tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
+	Tile					*new_start = dynamic_cast<Tile *>(&grid(pointed_tile_pos.x, pointed_tile_pos.y));
 
-static void	put_grid_on_window(sf::RenderWindow &window, const Grid &grid)
-{
-	window.clear();
-	for (int32_t i = 0; i < N_COLS; i++)
+	if (new_start->getType() == START)
+		return ;
+	
+	new_start->setType(START);
+	put_tile_on_window(window, *new_start);
+	if (old_start)
 	{
-		for (int32_t j = 0; j < N_ROWS; j++)
-		{
-			const Tile	&tile = dynamic_cast<const Tile &>(grid(i, j));
-			window.draw(tile.getSprite());
-		}
+		old_start->setType(FREE);
+		put_tile_on_window(window, *old_start);
 	}
+	old_start = new_start;
 }
 
-static void	set_obstacles(sf::RenderWindow &window, Grid &grid)
+static void	set_end(Grid &grid, sf::RenderWindow &window)
+{
+	static Tile				*old_end = nullptr;
+	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
+
+	if (!is_mouse_in_window(window, mouse_pos))
+		return ;
+	
+	const Vector2D<int32_t>	pointed_tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
+	Tile					*new_end = dynamic_cast<Tile *>(&grid(pointed_tile_pos.x, pointed_tile_pos.y));
+
+	if (new_end->getType() == END)
+		return ;
+	
+	new_end->setType(END);
+	put_tile_on_window(window, *new_end);
+	if (old_end)
+	{
+		old_end->setType(FREE);
+		put_tile_on_window(window, *old_end);
+	}
+	old_end = new_end;
+}
+
+static void	reset_grid(Grid &grid, sf::RenderWindow &window)
+{
+	grid.reset();
+	put_grid_on_window(window, grid);
+}
+
+static void	set_obstacles(Grid &grid, sf::RenderWindow &window)
 {
 	const bool	left_click = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 	const bool	right_click = sf::Mouse::isButtonPressed(sf::Mouse::Right);
@@ -129,33 +130,6 @@ static void	set_obstacles(sf::RenderWindow &window, Grid &grid)
 	const enum e_cell_type	status = (left_click) ? OBSTACLE : FREE;
 
 	set_pointed_cell(grid, status, window);
-}
-
-static void update_start_end(Grid &grid, sf::RenderWindow &window, const enum e_cell_type status)
-{
-	static Tile	*old_start = nullptr;
-	static Tile	*old_end = nullptr;
-
-	if (status != START && status != END)
-		throw InternalErrorException("update_start_end: status must be either START or END");
-
-	const Vector2D<int32_t>		mouse_pos = sf::Mouse::getPosition(window);
-
-	if (!is_mouse_in_window(window, mouse_pos))
-		return ;
-
-	const Vector2D<int32_t>	tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-
-	Tile	*old_tile = (status == START) ? old_start : old_end;
-	Tile	*new_tile = dynamic_cast<Tile *>(&grid(tile_pos.x, tile_pos.y));
-
-	new_tile->setType(status);
-	put_tile_on_window(window, *new_tile);
-	(status == START) ? old_start = new_tile : old_end = new_tile;
-	if (!old_tile)
-		return ;
-	old_tile->setType(FREE);
-	put_tile_on_window(window, *old_tile);
 }
 
 static void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindow &window)
@@ -172,116 +146,4 @@ static void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::Rend
 		return ;
 	tile.setType(status);
 	put_tile_on_window(window, tile);
-}
-
-static void visualize_pathfinding(sf::RenderWindow &window, Grid &grid)
-{
-	Node 			&start = dynamic_cast<Node &>(grid.getStart());
-	Node 			&end = dynamic_cast<Node &>(grid.getEnd());
-	vector<Node *>	open_set, closed_set;
-
-	for (int32_t x = 0; x < N_COLS; x++)
-	{
-		for (int32_t y = 0; y < N_ROWS; y++)
-		{
-			Node &node = dynamic_cast<Node &>(grid(x, y));
-			if (node.getType() == OBSTACLE)
-				continue;
-			set_neighbours(node, grid);
-			node.setCostH(Grid::computeDistance(node, end));
-			node.setCostG(FLT_MAX);
-			node.setCostF(FLT_MAX);
-		}
-	}
-	start.setCostG(0);
-	start.setCostF(start.getCostH());
-
-	open_set.push_back(&start);
-	while (!open_set.empty())
-	{
-		// Find the node with the lowest f_cost
-		int32_t best_idx = 0;
-		int32_t open_set_size = open_set.size();
-		for (int32_t i = 0; i < open_set_size; i++)
-		{
-			if (open_set[i]->getCostF() < open_set[best_idx]->getCostF())
-				best_idx = i;
-		}
-
-		Node &current = *open_set[best_idx];
-		// If the current node is the end node, we have found the path
-		if (current == end)
-			break;
-
-		open_set.erase(open_set.begin() + best_idx);
-		closed_set.push_back(&current);
-
-		const array<Node *, 8>	&neighbors = current.getNeighbours();
-		for (Node *neighbor : neighbors)
-		{
-			if (!neighbor)
-				continue;
-			// If the neighbor is in the closed set, skip it
-			if (std::find(closed_set.begin(), closed_set.end(), neighbor) != closed_set.end())
-				continue;
-
-			float tentative_g_cost = current.getCostG() + Grid::computeDistance(current, *neighbor);
-			
-			// If the neighbor is not in the open set, add it
-			if (std::find(open_set.begin(), open_set.end(), neighbor) == open_set.end())
-				open_set.push_back(neighbor);
-			// If the new path to neighbor is shorter or the neighbor is not in the open set
-			else if (tentative_g_cost >= neighbor->getCostG())
-				continue; // This is not a better path
-
-			// This path is the best until now. Record it
-			// neighbor->setParent(current);
-			neighbor->setCostG(tentative_g_cost);
-			neighbor->setCostF(neighbor->getCostG() + neighbor->getCostH());
-
-			Tile			&tile = dynamic_cast<Tile &>(*neighbor);
-			const sf::Color	&color = compute_color(neighbor->getCostF());
-			tile.setColor(color);
-			put_tile_on_window(window, tile);
-		}
-	}
-	// Optionally, visualize or use the path here
-}
-
-static void set_neighbours(Node &node, Grid &grid)
-{
-	array<Node *, 8>		neighbours;
-	const Vector2D<int32_t>	&pos = node.getPos();
-	const int32_t			n_cols = grid.getCols();
-	const int32_t			n_rows = grid.getRows();
-	auto					it = neighbours.begin();
-
-	for (int32_t x = pos.x - 1; x <= pos.x + 1; x++)
-	{
-		if (x < 0 || x >= n_cols)
-			continue;
-		for (int32_t y = pos.y - 1; y <= pos.y + 1; y++)
-		{
-			if (y < 0 || y >= n_rows || (x == pos.x && y == pos.y))
-				continue;
-			Cell &cell = grid(x, y);
-			if (cell.getType() == OBSTACLE)
-				continue;
-			*it++ = dynamic_cast<Node *>(&cell);
-		}
-	}
-	node.setNeighbours(neighbours);
-}
-
-static const sf::Color compute_color(const int32_t f_cost)
-{
-	static const int32_t	max_f_cost = N_COLS + N_ROWS;
-
-	printf("f_cost: %d\n", f_cost);
-	if (f_cost < 0 || f_cost > max_f_cost)
-		throw InternalErrorException("compute_color: f_cost out of bounds");
-	
-	const float	normalized_f_cost = static_cast<float>(f_cost) / static_cast<float>(max_f_cost);
-	const int32_t gradient_value = static_cast<int32_t>(normalized_f_cost * 255);
-	return GRADIENTS[gradient_value];
 }
