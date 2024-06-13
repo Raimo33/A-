@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 15:04:34 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 19:40:29 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:17:46 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,21 @@ void	Tile::setType(const enum e_cell_type type)
 	_sprite.setFillColor(_color);
 }
 
+void	Tile::reset(void)
+{
+	_type = FREE;
+	_color = tile_colors.at(FREE);
+	_sprite.setFillColor(_color);
+	_sprite.setOutlineColor(sf::Color::Black);
+	_sprite.setOutlineThickness(1);
+}
+
 sf::RectangleShape	Tile::initSprite(void) const
 {
 	sf::RectangleShape		sprite(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-	static const sf::Color	gray(128, 128, 128);
 
 	sprite.setOutlineThickness(1);
-	sprite.setOutlineColor(gray);
+	sprite.setOutlineColor(sf::Color::Black);
 	sprite.setPosition(_pos.x * TILE_SIZE, _pos.y * TILE_SIZE);
 	sprite.setFillColor(_color);
 

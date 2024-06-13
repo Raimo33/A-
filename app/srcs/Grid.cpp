@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 15:00:10 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 14:19:18 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:14:13 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	Grid::reset(void)
 {
 	for (auto &col : _grid)
 		for (auto &cell : col)
-			dynamic_cast<Tile *>(cell)->setType(FREE);
+			dynamic_cast<Tile *>(cell)->reset();
 }
 
 void	Grid::insertCell(const Cell &cell)

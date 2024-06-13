@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:38:22 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 19:40:26 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:14:28 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ class Tile : public Cell
 		void						setColor(const sf::Color &color);
 		sf::RectangleShape			&getSprite(void);
 		void						setType(const enum e_cell_type type);
+
+		void						reset(void);
 
 	protected:
 		sf::RectangleShape			initSprite(void) const;

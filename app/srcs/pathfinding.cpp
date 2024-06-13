@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 13:50:59 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 19:38:36 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:26:00 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 #include <cfloat>
 #include <vector>
 #include <array>
-#include <chrono>
-#include <thread>
 
 using std::vector, std::array;
 
@@ -71,6 +69,8 @@ void visualize_pathfinding(Grid &grid, sf::RenderWindow &window)
 			neighbor->setCostG(tentative_g_cost);
 			neighbor->setCostF(neighbor->getCostG() + neighbor->getCostH());
 
+			if (neighbor == &end)
+				continue;
 			const sf::Color	&color = compute_color(neighbor->getCostF());
 			neighbor->setColor(color);
 			put_tile_on_window(window, *neighbor);
@@ -157,36 +157,12 @@ static vector<Node *>	reconstruct_path(Node &start, Node &end)
 
 static void	display_path(vector<Node *> &path, sf::RenderWindow &window)	
 {
-	const sf::Color	default_outline_color = path[0]->getSprite().getOutlineColor();
-	const float		default_outline_thickness = path[0]->getSprite().getOutlineThickness();
-	const sf::Color	path_outline_color = sf::Color::Yellow;
-	const float		path_outline_thickness = 2.0f;
-	auto			it = path.begin();
-	auto			prev_it = path.end();
-
-	while (window.isOpen())
+	for (Node *node : path)
 	{
-		if (prev_it != path.end())
-		{
-			//unhighlight the previous tile
-			Tile &prev_tile = **prev_it;
-			sf::RectangleShape	&prev_tile_sprite = prev_tile.getSprite();
-			prev_tile_sprite.setOutlineThickness(default_outline_thickness);
-			prev_tile_sprite.setOutlineColor(default_outline_color);
-			put_tile_on_window(window, prev_tile);
-		}
-
-		Tile &tile = **it;
-		sf::RectangleShape	&tile_sprite = tile.getSprite();
-		tile_sprite.setOutlineThickness(path_outline_thickness);
-		tile_sprite.setOutlineColor(path_outline_color);
-		put_tile_on_window(window, tile);
-		window.display();
-
-		prev_it = it;
-		if (++it == path.end())
-			it = path.begin();
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		Tile &tile = dynamic_cast<Tile &>(*node);
+		sf::RectangleShape &sprite = tile.getSprite();
+		sprite.setOutlineColor(sf::Color::Green);
+		sprite.setOutlineThickness(2);
+		put_tile_on_window(window, *node);
 	}
 }

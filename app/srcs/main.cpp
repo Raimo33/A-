@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 18:59:20 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:27:07 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@
 //TODO una volta trovata la migliore path, visualizzarla con la transparency che va e viene (3 celle per volta tipo dallo start fino all'end e poi torna indietro, molto dinamica, in un loop)
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 #include "headers/Grid.hpp"
 #include "headers/pathfinding.hpp"
 #include "headers/window_utils.hpp"
 
-using std::array, std::vector, std::unordered_map;
+using std::array, std::vector, std::unordered_map, std::cerr, std::endl;
 
 void set_obstacles(Grid &grid, sf::RenderWindow &window);
 void set_start(Grid &grid, sf::RenderWindow &window);
@@ -29,6 +30,8 @@ void reset_grid(Grid &grid, sf::RenderWindow &window);
 void set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindow &window);
 
 using Handler = void (*)(Grid&, sf::RenderWindow&);
+
+bool visualization_in_progress = false;
 
 int main(void)
 {
@@ -45,14 +48,23 @@ int main(void)
 
 	init_window(window);
 	put_grid_on_window(window, grid);
-	while (window.isOpen())
+	while (window.isOpen() && !visualization_in_progress)
 	{
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 				goto cleanup;
 			if (event.type == sf::Event::KeyPressed && key_handlers.find(event.key.code) != key_handlers.end())
-				key_handlers.at(event.key.code)(grid, window);
+			{
+				try
+				{
+					key_handlers.at(event.key.code)(grid, window);
+				}
+				catch (const std::exception &e)
+				{
+					cerr << e.what() << endl;
+				}
+			}
 		}
 		set_obstacles(grid, window);
 		window.display();
@@ -123,13 +135,6 @@ void	set_obstacles(Grid &grid, sf::RenderWindow &window)
 	if (!left_click && !right_click)
 		return ;
 
-	const enum e_cell_type	status = (left_click) ? OBSTACLE : FREE;
-
-	set_pointed_cell(grid, status, window);
-}
-
-void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindow &window)
-{
 	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (!is_mouse_in_window(window, mouse_pos))
@@ -138,8 +143,6 @@ void	set_pointed_cell(Grid &grid, const enum e_cell_type status, sf::RenderWindo
 	const Vector2D<int32_t>	tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
 	Tile					&tile = dynamic_cast<Tile &>(grid(tile_pos.x, tile_pos.y));
 
-	if (tile.getType() == status)
-		return ;
-	tile.setType(status);
+	(left_click ? tile.setType(OBSTACLE) : tile.reset());
 	put_tile_on_window(window, tile);
 }
