@@ -25,8 +25,8 @@ This project is a simple visualizer for the A* pathfinding algorithm, built usin
 
  1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/aStarVisualizer.git
-cd aStarVisualizer
+git clone git@github.com:Raimo33/A_star.git
+cd A_star
 ```
  2. Build the Docker image:
 ```bash
