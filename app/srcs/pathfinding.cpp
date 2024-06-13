@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 13:50:59 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 20:26:00 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:44:24 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <cfloat>
 #include <vector>
 #include <array>
+#include <chrono>
+#include <thread>
 
 using std::vector, std::array;
 
@@ -74,6 +76,8 @@ void visualize_pathfinding(Grid &grid, sf::RenderWindow &window)
 			const sf::Color	&color = compute_color(neighbor->getCostF());
 			neighbor->setColor(color);
 			put_tile_on_window(window, *neighbor);
+			window.display();
+			std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
 		}
 	}
 	vector<Node *>	path = reconstruct_path(start, end);

@@ -6,13 +6,11 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 20:27:07 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:47:59 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //TODO type correctness (uint16_t, uint8_t, Vector2D ovunque)
-//TODO splittare il main.cpp in più file
-//TODO una volta trovata la migliore path, visualizzarla con la transparency che va e viene (3 celle per volta tipo dallo start fino all'end e poi torna indietro, molto dinamica, in un loop)
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
