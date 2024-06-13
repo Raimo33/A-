@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 15:04:34 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 20:17:46 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 00:37:25 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ void	Tile::setColor(const sf::Color &color)
 	_sprite.setFillColor(_color);
 }
 
-sf::RectangleShape	&Tile::getSprite(void) { return _sprite; }
+sf::RectangleShape			&Tile::getSprite(void) { return _sprite; }
+const sf::RectangleShape	&Tile::getSprite(void) const { return _sprite; }
 
 void	Tile::setType(const enum e_cell_type type)
 {

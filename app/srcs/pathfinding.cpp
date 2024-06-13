@@ -6,13 +6,15 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 13:50:59 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 20:44:24 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 00:43:42 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers/pathfinding.hpp"
 #include "headers/Node.hpp"
 #include "headers/window_utils.hpp"
+
+//TODO gestire caso in cui non c'è un path
 
 #include <cfloat>
 #include <vector>
@@ -135,7 +137,7 @@ static void set_neighbors(Node &node, Grid &grid)
 
 static const sf::Color compute_color(const float f_cost)
 {
-	static const float	max_f_cost = N_COLS + N_ROWS;
+	static const float	max_f_cost = 2 * (N_COLS + N_ROWS - 2);
 
 	std::clamp(f_cost, 0.0f, max_f_cost);
 	
