@@ -6,13 +6,13 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 15:04:34 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/14 00:37:25 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 12:51:34 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers/Tile.hpp"
 
-Tile::Tile(const enum e_cell_type type, const int32_t x, const int32_t y) :
+Tile::Tile(const enum e_cell_type type, const uint16_t x, const uint16_t y) :
 	Cell(type, x, y),
 	_color(tile_colors.at(type)),
 	_sprite(initSprite()) {}

@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:55:47 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 11:52:15 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 12:45:34 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,14 @@
 class Grid
 {
 	public:
-		Grid(const int32_t n_cols, const int32_t n_rows, const enum e_cell_type status = FREE);
+		Grid(const uint16_t n_cols, const uint16_t n_rows, const enum e_cell_type status = FREE);
 		~Grid(void);
 
-		Cell								&operator()(const int32_t x, const int32_t y);
-		const Cell							&operator()(const int32_t x, const int32_t y) const;
+		Cell								&operator()(const uint16_t x, const uint16_t y);
+		const Cell							&operator()(const uint16_t x, const uint16_t y) const;
 
-		int32_t								getCols(void) const;
-		int32_t								getRows(void) const;
+		uint16_t							getCols(void) const;
+		uint16_t							getRows(void) const;
 		Cell								&getStart(void) const;
 		Cell								&getEnd(void) const;
 
@@ -41,7 +41,6 @@ class Grid
 		class								EndNotFoundException;
 
 	private:
-
 		std::vector<std::vector<Cell *>>	_grid;
 };
 

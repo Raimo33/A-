@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:35:55 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 10:59:02 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 12:45:03 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,16 @@ enum e_cell_type : uint8_t
 class Cell
 {
 	public:
-		Cell(const enum e_cell_type type, const int32_t x, const int32_t y);
+		Cell(const enum e_cell_type type, const uint16_t x, const uint16_t y);
 		Cell(const Cell &src);
 		virtual ~Cell(void) = 0;
 
 		bool					operator==(const Cell &rhs) const;
 
-		const Vector2D<int32_t>	&getPos(void) const;
+		const Vector2D<uint16_t>	&getPos(void) const;
 		enum e_cell_type		getType(void) const;
 
 	protected:
 		enum e_cell_type		_type;
-		const Vector2D<int32_t>	_pos;
+		const Vector2D<uint16_t>	_pos;
 };

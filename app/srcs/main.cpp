@@ -6,11 +6,9 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 17:08:21 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 20:47:59 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 13:41:02 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-//TODO type correctness (uint16_t, uint8_t, Vector2D ovunque)
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -73,14 +71,14 @@ cleanup:
 
 void	set_start(Grid &grid, sf::RenderWindow &window)
 {
-	static Tile				*old_start = nullptr;
-	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
+	static Tile				*old_start = nullptr; //TODO set to nullptr again when resetgrid is called
+	const Vector2D<int16_t>	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
-	
-	const Vector2D<int32_t>	pointed_tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-	Tile					*new_start = dynamic_cast<Tile *>(&grid(pointed_tile_pos.x, pointed_tile_pos.y));
+
+	const Vector2D<uint16_t>	pointed_tile_pos = {static_cast<uint16_t>(mouse_pos.x / TILE_SIZE), static_cast<uint16_t>(mouse_pos.y / TILE_SIZE)};
+	Tile						*new_start = dynamic_cast<Tile *>(&grid(pointed_tile_pos.x, pointed_tile_pos.y));
 
 	if (new_start->getType() == START)
 		return ;
@@ -97,14 +95,14 @@ void	set_start(Grid &grid, sf::RenderWindow &window)
 
 void	set_end(Grid &grid, sf::RenderWindow &window)
 {
-	static Tile				*old_end = nullptr;
-	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
+	static Tile				*old_end = nullptr; //TODO set to nullptr again when resetgrid is called
+	const Vector2D<int16_t>	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
 	
-	const Vector2D<int32_t>	pointed_tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-	Tile					*new_end = dynamic_cast<Tile *>(&grid(pointed_tile_pos.x, pointed_tile_pos.y));
+	const Vector2D<uint16_t>	pointed_tile_pos = {static_cast<uint16_t>(mouse_pos.x / TILE_SIZE), static_cast<uint16_t>(mouse_pos.y / TILE_SIZE)};
+	Tile						*new_end = dynamic_cast<Tile *>(&grid(pointed_tile_pos.x, pointed_tile_pos.y));
 
 	if (new_end->getType() == END)
 		return ;
@@ -133,13 +131,13 @@ void	set_obstacles(Grid &grid, sf::RenderWindow &window)
 	if (!left_click && !right_click)
 		return ;
 
-	const Vector2D<int32_t>	mouse_pos = sf::Mouse::getPosition(window);
+	const Vector2D<int16_t>	mouse_pos = sf::Mouse::getPosition(window);
 
 	if (!is_mouse_in_window(window, mouse_pos))
 		return ;
 
-	const Vector2D<int32_t>	tile_pos = {mouse_pos.x / TILE_SIZE, mouse_pos.y / TILE_SIZE};
-	Tile					&tile = dynamic_cast<Tile &>(grid(tile_pos.x, tile_pos.y));
+	const Vector2D<uint16_t>	pointed_tile_pos = {static_cast<uint16_t>(mouse_pos.x / TILE_SIZE), static_cast<uint16_t>(mouse_pos.y / TILE_SIZE)};
+	Tile						&tile = dynamic_cast<Tile &>(grid(pointed_tile_pos.x, pointed_tile_pos.y));
 
 	(left_click ? tile.setType(OBSTACLE) : tile.reset());
 	put_tile_on_window(window, tile);

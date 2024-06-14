@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:28:30 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 19:22:22 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 12:45:41 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 class Node : public Tile
 {
 	public:
-		Node(const enum e_cell_type type, const int32_t x, const int32_t y);
+		Node(const enum e_cell_type type, const uint16_t x, const uint16_t y);
 		Node(const Tile &src);
 		Node(const Node &src);
 		~Node(void);

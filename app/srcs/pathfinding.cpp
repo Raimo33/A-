@@ -6,15 +6,13 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 13:50:59 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/14 00:43:42 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 13:27:08 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers/pathfinding.hpp"
 #include "headers/Node.hpp"
 #include "headers/window_utils.hpp"
-
-//TODO gestire caso in cui non c'è un path
 
 #include <cfloat>
 #include <vector>
@@ -26,8 +24,8 @@ using std::vector, std::array;
 
 static void				init_nodes(Grid &grid, Node &start, Node &end);
 static void				set_neighbors(Node &node, Grid &grid);
-static const sf::Color	compute_color(const float f_cost);
-static vector<Node *>	reconstruct_path(Node &start, Node &end);
+static const sf::Color	compute_color(const float h_cost);
+static vector<Node *>	reconstruct_path(Node &end);
 static void				display_path(vector<Node *> &path, sf::RenderWindow &window);
 
 void visualize_pathfinding(Grid &grid, sf::RenderWindow &window)
@@ -35,15 +33,24 @@ void visualize_pathfinding(Grid &grid, sf::RenderWindow &window)
 	Node 			&start = dynamic_cast<Node &>(grid.getStart());
 	Node 			&end = dynamic_cast<Node &>(grid.getEnd());
 	vector<Node *>	open_set, closed_set;
+	sf::Event		event;
 
 	init_nodes(grid, start, end);
 	open_set.push_back(&start);
-	while (!open_set.empty())
+	while (window.isOpen() && !open_set.empty())
 	{
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+				return;
+			}
+		}
 		// Find the node with the lowest f_cost
-		int32_t best_idx = 0;
-		int32_t open_set_size = open_set.size();
-		for (int32_t i = 0; i < open_set_size; i++)
+		uint16_t best_idx = 0;
+		uint16_t open_set_size = open_set.size();
+		for (uint16_t i = 0; i < open_set_size; i++)
 			if (open_set[i]->getCostF() < open_set[best_idx]->getCostF())
 				best_idx = i;
 
@@ -75,25 +82,25 @@ void visualize_pathfinding(Grid &grid, sf::RenderWindow &window)
 
 			if (neighbor == &end)
 				continue;
-			const sf::Color	&color = compute_color(neighbor->getCostF());
+			const sf::Color	&color = compute_color(neighbor->getCostH());
 			neighbor->setColor(color);
 			put_tile_on_window(window, *neighbor);
 			window.display();
 			std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
 		}
 	}
-	vector<Node *>	path = reconstruct_path(start, end);
+	vector<Node *>	path = reconstruct_path(end);
 	display_path(path, window);
 }
 
 static void	init_nodes(Grid &grid, Node &start, Node &end)
 {
-	const int32_t	n_cols = grid.getCols();
-	const int32_t	n_rows = grid.getRows();
+	const uint16_t	n_cols = grid.getCols();
+	const uint16_t	n_rows = grid.getRows();
 
-	for (int32_t x = 0; x < n_cols; x++)
+	for (uint16_t x = 0; x < n_cols; x++)
 	{
-		for (int32_t y = 0; y < n_rows; y++)
+		for (uint16_t y = 0; y < n_rows; y++)
 		{
 			Node &node = dynamic_cast<Node &>(grid(x, y));
 			if (node.getType() == OBSTACLE)
@@ -111,18 +118,18 @@ static void	init_nodes(Grid &grid, Node &start, Node &end)
 
 static void set_neighbors(Node &node, Grid &grid)
 {
-	array<Node *, 8>		neighbors;
-	const Vector2D<int32_t>	&pos = node.getPos();
-	const int32_t			n_cols = grid.getCols();
-	const int32_t			n_rows = grid.getRows();
-	auto					it = neighbors.begin();
+	array<Node *, 8>			neighbors;
+	const Vector2D<uint16_t>	&pos = node.getPos();
+	const uint16_t				n_cols = grid.getCols();
+	const uint16_t				n_rows = grid.getRows();
+	auto						it = neighbors.begin();
 
 	std::fill(neighbors.begin(), neighbors.end(), nullptr);
-	for (int32_t x = pos.x - 1; x <= pos.x + 1; x++)
+	for (int16_t x = pos.x - 1; x <= pos.x + 1; x++)
 	{
 		if (x < 0 || x >= n_cols)
 			continue;
-		for (int32_t y = pos.y - 1; y <= pos.y + 1; y++)
+		for (int16_t y = pos.y - 1; y <= pos.y + 1; y++)
 		{
 			if (y < 0 || y >= n_rows || (x == pos.x && y == pos.y))
 				continue;
@@ -135,28 +142,30 @@ static void set_neighbors(Node &node, Grid &grid)
 	node.setneighbors(neighbors);
 }
 
-static const sf::Color compute_color(const float f_cost)
+static const sf::Color compute_color(const float h_cost)
 {
-	static const float	max_f_cost = 2 * (N_COLS + N_ROWS - 2);
+	static float max_h_cost_encountered = h_cost;
 
-	std::clamp(f_cost, 0.0f, max_f_cost);
-	
-	const float	normalized_f_cost = f_cost / max_f_cost;
-	const int32_t gradient_value = static_cast<int32_t>(normalized_f_cost * 255.0f);
+	if (h_cost > max_h_cost_encountered)
+		max_h_cost_encountered = h_cost;
+
+	float	clamped_h_cost = std::clamp(h_cost, 0.0f, max_h_cost_encountered);
+	float	normalized_h_cost = clamped_h_cost / (max_h_cost_encountered + 1.0f);
+	uint8_t	gradient_value = static_cast<uint8_t>(normalized_h_cost * 255.0f);
+
 	return GRADIENTS[gradient_value];
 }
 
-static vector<Node *>	reconstruct_path(Node &start, Node &end)
+static vector<Node *>	reconstruct_path(Node &end)
 {
 	vector<Node *>	path;
 	Node			*current = &end;
 
-	while (current != &start)
+	while (current != nullptr)
 	{
 		path.push_back(current);
 		current = current->getParent();
 	}
-	path.push_back(&start);
 	std::reverse(path.begin(), path.end());
 	return path;
 }

@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 11:39:53 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/13 19:22:17 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/14 12:49:27 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 using std::array;
 
-Node::Node(const enum e_cell_type type, const int32_t x, const int32_t y) :
+Node::Node(const enum e_cell_type type, const uint16_t x, const uint16_t y) :
 	Tile(type, x, y),
 	_g_cost(0),
 	_h_cost(0),
