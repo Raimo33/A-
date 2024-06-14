@@ -38,10 +38,14 @@ make docker-run
 ```
 ## Controls
 
-**S** - Set the start point.
-**E** - Set the end point.
-**R** - Reset the grid.
-**Space** - Start the A* pathfinding visualization.
+| Button          | Action               |
+| --------------  | -------------------- |
+| **Left Click**  | Set obstacle         |
+| **Right Click** | Reset cell           |
+| **S**           | Set the start point  |
+| **E**           | Set the end point    |
+| **R**           | Reset the grid       |
+| **Space**       | Start Visualization  |
 
 ## Notes
 
