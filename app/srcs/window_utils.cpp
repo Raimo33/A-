@@ -6,7 +6,7 @@
 /*   By: craimond <bomboclat@bidol.juis>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 13:52:00 by craimond          #+#    #+#             */
-/*   Updated: 2024/06/14 12:52:20 by craimond         ###   ########.fr       */
+/*   Updated: 2024/06/15 14:05:25 by craimond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	init_window(sf::RenderWindow &window)
 {
-	window.create(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "A* Pathfinding");
+	window.create(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "A* Pathfinding", sf::Style::Titlebar | sf::Style::Close);
 	window.setFramerateLimit(FPS);
 }
 
